@@ -1,7 +1,6 @@
 <template>
   <q-dialog
     v-model="dialog"
-    persistent
   >
     <q-card>
       <q-card-section>
@@ -16,7 +15,7 @@
 
           <q-input
             label="Name"
-            v-model="selectedTransaction.transName"
+            v-model="selectedTransaction.name"
             lazy-rules
             :rules="[val => val && val.trim().length > 0 || 'Please enter a name']"
           ></q-input>
@@ -56,7 +55,7 @@ export default {
     return {
       dialog: true,
       selectedTransaction: {
-        transName: '',
+        name: '',
         amount: 0,
       },
       rules: {

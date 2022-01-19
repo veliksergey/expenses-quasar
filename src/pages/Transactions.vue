@@ -77,27 +77,27 @@
 
             <!-- account -->
             <template v-else-if="col.name === 'account'">
-              {{ props.row.account.accountName }}
+              {{ props.row.account.name }}
             </template>
 
             <!-- category -->
-            <template v-else-if="col.name === 'cat'">
-              {{ props.row.cat?.catName }}
+            <template v-else-if="col.name === 'category'">
+              {{ props.row.category?.name }}
             </template>
 
             <!-- person -->
             <template v-else-if="col.name === 'person'">
-              {{ props.row.person.personName }}
+              {{ props.row.person.name }}
             </template>
 
             <!-- project -->
             <template v-else-if="col.name === 'project'">
-              {{ props.row.project.projectName }}
+              {{ props.row.project.name }}
             </template>
 
             <!-- vendor -->
             <template v-else-if="col.name === 'vendor'">
-              {{ props.row.vendor.vendorName }}
+              {{ props.row.vendor.name }}
             </template>
 
             <!-- everything else -->
@@ -131,7 +131,7 @@
               Related Amount: {{ props.row.relatedAmount }} <br>
               Related Date: {{ props.row.relatedDate }} <br>
               Non Taxable: {{ props.row.nonTaxable }} <br>
-              By: {{ props.row.person.personName }} <br>
+              By: {{ props.row.person.name }} <br>
             </div>
           </q-td>
         </q-tr>
@@ -163,11 +163,11 @@ export default defineComponent({
       columns: [
         {name: 'date', label: 'Date', field: 'date', align: 'center'},
         {name: 'amount', label: 'Amount', field: 'amount'},
-        {name: 'transName', label: 'Name', field: 'transName', align: 'left'},
+        {name: 'name', label: 'Name', field: 'name', align: 'left'},
         {name: 'project', label: 'Project', field: 'projectId', align: 'left'},
         {name: 'account', label: 'Account', field: 'accountId', align: 'left'},
         {name: 'vendor', label: 'Vendor', field: 'vendorId', align: 'left'},
-        {name: 'cat', label: 'Category', field: 'catId', align: 'left'},
+        {name: 'category', label: 'Category', field: 'catId', align: 'left'},
       ],
     };
   },
