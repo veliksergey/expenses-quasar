@@ -1,35 +1,31 @@
 <template>
   <div>
 
-<!--    <q-bar class="bg-primary text-white rounded-borders">
-      bar
-    </q-bar>-->
-
+    <!-- banner -->
     <q-banner class="bg-primary text-white" rounded>
-<!--      <q-toolbar-title>Banner title</q-toolbar-title>-->
       <div class="row">
+        <!-- title -->
         <span class="q-header">Transactions</span>
         <q-space></q-space>
-
+        <!-- search -->
         <q-input v-model="search"
                  dense
                  color="white"
                  class="text-white"
         ></q-input>
-
         <q-space></q-space>
-
         <!-- add btn -->
         <q-btn
           round
           flat
           class="bg-primary"
           icon="fas fa-plus"
-          @click="createDialog = true"
+          @click="editTransaction()"
           ></q-btn>
       </div>
     </q-banner>
 
+    <!-- table -->
     <q-table
       :rows='transactions'
       :columns='columns'
@@ -110,21 +106,23 @@
               :props="props">
           <q-td colspan="100%">
             <div class="text-left">
+              <!-- edit btn -->
               <q-btn icon='edit'
                      dense
                      round
                      size='small'
                      color='primary'
                      class="q-mr-sm"
-                     v-if="props.expand"
+                     @click="editTransaction(props.row)"
               ></q-btn>
+              <!-- delete btn -->
               <q-btn icon='delete'
                      dense
                      round
                      size='small'
                      color='negative'
                      class="q-mr-sm"
-                     v-if="props.expand"
+                     @click="deleteTransaction(props.row)"
               ></q-btn>
               <br>
               Notes: {{ props.row.notes }} <br>
@@ -139,27 +137,24 @@
 
     </q-table>
 
-    <TransactionFormDialog></TransactionFormDialog>
+    <!-- dialog -->
+    <q-dialog v-model="dialog">
+      <TransactionFormDialog></TransactionFormDialog>
+    </q-dialog>
 
   </div>
 </template>
 
 <script>
-import {defineComponent} from 'vue';
-import {useStore} from 'vuex';
 import TransactionFormDialog from 'components/transactions/TransactionFormDialog';
 
-export default defineComponent({
+export default {
   name: 'Transactions',
   components: {TransactionFormDialog},
-  setup() {
-    const $store = useStore();
-    const search = '';
 
-    return {$store, search}
-  },
   data() {
     return {
+      search: '',
       columns: [
         {name: 'date', label: 'Date', field: 'date', align: 'center'},
         {name: 'amount', label: 'Amount', field: 'amount'},
@@ -171,18 +166,50 @@ export default defineComponent({
       ],
     };
   },
+
   computed: {
-    transactions() {
-      return this.$store.getters['transactions/list'];
+    transactions() {return this.$store.getters['transactions/list']},
+    isLoading() {return this.$store.getters['transactions/isLoading']},
+    dialog: {
+      get() {return this.$store.getters['transactions/dialog']},
+      set(newVal) {return this.$store.commit('transactions/setDialog', newVal)}
     }
   },
-  methods: {},
+
+  watch: {
+    // ToDo
+  },
+
+  methods: {
+    async getList() {
+      await this.$store.dispatch('transactions/getList', {search: ''});
+    },
+    editTransaction(transaction) {
+      this.$store.commit('transactions/setSelectedTransaction', transaction);
+      this.$store.commit('transactions/setDialog', true);
+    },
+    deleteTransaction(transaction) {
+      this.$q.dialog({
+        title: `Delete "${transaction.name}?"`,
+        message: `Are you sure you want delete transaction <strong class="text-primary">${transaction.name}</strong>?`,
+        html: true,
+        cancel: true,
+        focus: false,
+      }).onOk(() => {
+        this.$store.dispatch('transactions/deleteTransaction', {transaction});
+      });
+    },
+    async getAllItemsForDropdowns() {
+      await this.$store.dispatch('items/getAllItems');
+    }
+  },
 
   mounted() {
-    this.$store.dispatch('transactions/getList', {search: ''});
+    this.getList();
+    this.getAllItemsForDropdowns();
   }
 
-});
+};
 </script>
 
 <style scoped>

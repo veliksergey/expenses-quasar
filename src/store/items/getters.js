@@ -1,12 +1,9 @@
 export function list (state) {
   return state.list;
 }
-export function total (state) {
-  return state.total;
-}
 
-export function selectedTransaction (state) {
-  return state.selectedTransaction;
+export function selectedItem (state) {
+  return state.selectedItem;
 }
 
 export function dialog (state) {
@@ -19,4 +16,12 @@ export function isLoading (state) {
 
 export function isSaving (state) {
   return state.isSaving;
+}
+
+export function type (state) {
+  return state.type;
+}
+
+export function allItems (state) {
+  return state.allItems;
 }

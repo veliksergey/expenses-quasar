@@ -48,7 +48,7 @@
         <q-separator spaced></q-separator>
         <q-item-label header>Settings</q-item-label>
 
-        <q-item v-for='link in leftLinks' :key='link.label'>
+        <q-item v-for='link in leftLinks' :key='link.label' :to="link.href">
           <q-item-section avatar><q-icon :name='link.icon'></q-icon></q-item-section>
           <q-item-section>{{link.label}}</q-item-section>
         </q-item>
@@ -93,11 +93,11 @@ export default {
   data() {
     return {
       leftLinks: [
-        {label: 'Projects', icon: 'fas fa-box', href: '/projects'},
-        {label: 'Accounts', icon: 'mdi-bank', href: '/accounts'},
-        {label: 'People', icon: 'fas fa-user', href: '/people'},
-        {label: 'Categories', icon: 'fas fa-cat', href: '/cats'},
-        {label: 'Vendors', icon: 'fas fa-store', href: '/vendors'},
+        {label: 'Accounts', icon: 'mdi-bank', href: '/items/accounts'},
+        {label: 'Categories', icon: 'fas fa-cat', href: '/items/categories'},
+        {label: 'People', icon: 'fas fa-user', href: '/items/people'},
+        {label: 'Projects', icon: 'fas fa-box', href: '/items/projects'},
+        {label: 'Vendors', icon: 'fas fa-store', href: '/items/vendors'},
       ]
     }
   }
