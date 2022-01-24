@@ -14,16 +14,33 @@ export async function getList (store, {search}) {
   }
 }
 
+function transformTransaction(trans) {
+  const {name, amount, relatedAmount, date, relatedDate, nonTaxable, notes,
+    fileName, fileInTemp, project, vendor} = trans;
+  const transToReturn = {
+    name, amount, relatedAmount, date, relatedDate, nonTaxable, notes, fileName, fileInTemp,
+    project, vendor,
+    accountId: trans.account?.id || null,
+    categoryId: trans.category?.id || null,
+    personId: trans.person?.id || null,
+    projectId: trans.project?.id || null,
+    vendorId: trans.vendor?.id || null,
+  };
+  if (trans.id) transToReturn.id = trans.id;
+  return transToReturn;
+}
+
 export async function saveTransaction (store, {transaction}) {
   store.commit('setIsSaving', true);
 
-  if (!transaction.id) delete transaction.id;
+  const transToSave = transformTransaction(transaction);
+  console.log('-- transToSave:', transToSave);
 
   try {
 
-    const res = transaction.id
-      ? await api.put(`transactions/${transaction.id}`, transaction)
-      : await api.post('transactions', transaction);
+    const res = transToSave.id
+      ? await api.put(`transactions/${transToSave.id}`, transToSave)
+      : await api.post('transactions', transToSave);
     const data = res.data;
 
     if (data.errMsg) {

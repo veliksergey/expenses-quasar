@@ -1,22 +1,20 @@
 <template>
-  <div>
-
-    <q-select
-      :label="type"
-      v-model="model"
-      use-input
-      input-debounce="0"
-      behavior="menu"
-      :options="options"
-      option-value="id"
-      option-label="name"
-      @filter="filterItems"
-      fill-input
-      hide-selected
-      clearable
-      ref="accountRef"
-    ></q-select>
-  </div>
+  <q-select
+    :label="label"
+    v-model="model"
+    :required="required"
+    use-input
+    :rules="rules"
+    input-debounce="0"
+    behavior="menu"
+    :options="options"
+    option-value="id"
+    option-label="name"
+    @filter="filterItems"
+    fill-input
+    hide-selected
+    ref="dropDownRef"
+  ></q-select>
 </template>
 
 <script>
@@ -28,27 +26,41 @@ export default {
       type: String,
       required: true,
     },
+    required: {
+      type: Boolean,
+      default: false,
+    }
   },
 
   data() {
     return {
       options: [],
+      rules: [
+        val => !this.required || (this.required && val.id) || 'Field required'
+      ],
     };
   },
 
   computed: {
-    typePlural() {return `${this.type}s`},
+    label() {
+      return this.type.charAt(0).toUpperCase() + this.type.slice(1);
+    },
+    typePlural() {
+      const t = this.type;
+      if (t === 'category') return 'categories';
+      else if (t === 'person') return 'people';
+      else return `${this.type}s`
+    },
     model: {
-      get() {return this.$store.getters['transactions/selectedTransaction']},
+      get() {return this.$store.getters['transactions/selectedTransaction'][this.type]},
       set(item) {
-        return this.$store.commit('transactions/updateItemInSelectedTransaction', {type: this.type, item})
+        this.$store.commit('transactions/updateItemInSelectedTransaction', {type: this.type, item})
       }
     },
   },
 
   methods: {
-    filterItems(val, update, abourt) {
-      console.log('-- type:', this.type, this.typePlural);
+    filterItems(val, update, abort) {
       update(() => {
         if (val === '') this.options = [...this.$store.getters['items/allItems'][this.typePlural]];
         const needle = val.toLowerCase();
@@ -59,10 +71,7 @@ export default {
   },
 
   mounted() {
-    console.log('-- mounted type:', this.type, this.typePlural);
     this.options = [...this.$store.getters['items/allItems'][this.typePlural]];
-    console.log('-- mounted options:', this.options);
-    console.log('-- this.$store.getters[\'items/allItems\']:', this.$store.getters['items/allItems']);
   }
 };
 </script>

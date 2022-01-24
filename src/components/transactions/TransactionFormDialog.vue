@@ -1,80 +1,145 @@
 <template>
-  <q-card style="width: 400px">
-    <q-form ref="formRef" @submit.prevent="onSubmit">
-      <q-card-section>
+  <q-card style="width: 600px">
+    <q-form ref="formRef"
+            @submit.prevent="onSubmit">
+      <q-card-section class="bg-primary text-white">
         <div class="text-h6">{{ title }}</div>
       </q-card-section>
 
-      <q-card-section v-if="selectedTransaction">
+      <q-card-section v-if="selected">
+        <div class="row">
 
-        <!-- name -->
-        <q-input
-          label="Name"
-          v-model="selectedTransaction.name"
-          lazy-rules
-          :rules="rules.name"
-        ></q-input>
+          <!-- date -->
+          <div class="col q-pr-sm">
+            <q-input
+              label="Date"
+              v-model="date"
+              mask="date"
+              :rules="rules.date"
+            >
+              <template v-slot:append>
+                <q-icon name="event"
+                        class="cursor-pointer">
+                  <q-popup-proxy ref="qDateProxy"
+                                 cover
+                                 transition-show="scale"
+                                 transition-hide="scale">
+                    <q-date v-model="date"
+                            v-close-popup>
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup
+                               label="Close"
+                               color="primary"
+                               flat></q-btn>
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+          </div>
 
-        <!-- amount -->
-        <q-input
-          label="Amount"
-          v-model="selectedTransaction.amount"
-          mask="#.##"
-          fill-mask="0"
-          reverse-fill-mask
-          :rules="rules.amount"
-          input-class="text-right"
-        ></q-input>
+          <!-- amount -->
+          <div class="col q-pl-sm">
+            <q-input
+              label="Amount"
+              v-model="amount"
+              mask="#.##"
+              fill-mask="0"
+              reverse-fill-mask
+              :rules="rules.amount"
+              input-class="text-right"
+              autofocus
+            ></q-input>
+          </div>
 
-        <!-- date -->
-<!--        <q-input
-          label="Date"
-          v-model="selectedTransaction.date"
-          mask="date"
-          :rules="rules.date"
-          >
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                <q-date v-model="selectedTransaction.date" @input="onDateInput" v-close-popup>
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat></q-btn>
+        </div>
+        <div class="row">
+
+          <!-- name -->
+          <div class="col q-pr-sm">
+            <q-input
+              label="Name"
+              v-model="name"
+              lazy-rules
+              :rules="rules.name"
+            ></q-input>
+          </div>
+
+          <!-- notes -->
+          <div class="col q-pl-sm">
+            <q-input
+              label="Notes"
+              v-model="notes"
+              autogrow
+            ></q-input>
+          </div>
+        </div>
+
+        <!-- dropdowns -->
+        <div class="row">
+          <div class="col q-pr-sm">
+            <ItemDropdown type="project"
+                          :required="true"></ItemDropdown>
+          </div>
+          <div class="col q-pl-sm">
+            <ItemDropdown type="vendor"
+                          :required="true"></ItemDropdown>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col q-pr-sm">
+            <ItemDropdown type="account"></ItemDropdown>
+          </div>
+          <div class="col q-pl-sm">
+            <ItemDropdown type="category"></ItemDropdown>
+          </div>
+        </div>
+        <!--        <div class="row">
+                  <div class="col-6 q-pr-sm">
+                    <ItemDropdown type="person"></ItemDropdown>
                   </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
+                </div>-->
 
-        &lt;!&ndash; notes &ndash;&gt;
-        <q-input
-          label="Notes"
-          v-model="selectedTransaction.notes"
-          autogrow
-        ></q-input>-->
-
-        <!-- account -->
-<!--        <q-select
-          label="Account"
-          v-model="selectedTransaction.account"
-          use-input
-          input-debounce="0"
-          behavior="menu"
-          :options="options.accounts"
-          option-value="id"
-          option-label="name"
-          @filter="filterAccounts"
-          fill-input
-          hide-selected
-          clearable
-          ref="accountRef"
-        ></q-select>-->
-
-        {{$store.state.transactions.selectedTransaction.account}}
-
-        <ItemDropdown type="account" :selectedItem="selectedTransaction.account"></ItemDropdown>
-
+        <!-- file -->
+        <div class="row">
+          <div class="col q-pr-sm">
+            <q-input
+              label="File Name"
+              v-model="fileName"
+              color="secondary"
+              label-color="secondary"
+            ></q-input>
+          </div>
+          <div class="col q-pl-sm">
+            <q-uploader
+              label="Upload File"
+              :factory="fileFactory"
+              @uploaded="onFileAdded"
+              :auto-upload="true"
+              :no-thumbnails="true"
+              accept=".jpg, .jpeg, .png, .pdf, image/*"
+              max-files="1"
+              color="secondary"
+              class="full-width"
+            >
+            </q-uploader>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <q-input label="Temp File Name"
+                     v-model="fileInTemp"
+                     readonly
+                     disable
+                     color="secondary"
+                     label-color="secondary"
+            ></q-input>
+          </div>
+        </div>
       </q-card-section>
+
+      {{selected}}
 
       <!-- actions -->
       <q-card-actions>
@@ -86,6 +151,7 @@
           type="button"
           color="primary"
           flat
+          class="q-mr-md"
           @click="onCancel"
           :disable="isSaving"
         ></q-btn>
@@ -105,16 +171,14 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import defaultTransaction from '../../store/transactions/defaultTransaction';
 import ItemDropdown from 'components/items/ItemDropdown';
+import {baseUrl} from 'boot/axios';
 
 export default {
   name: "TransactionFormDialog",
   components: {ItemDropdown},
   data() {
     return {
-      selectedTransaction: {...defaultTransaction},
       rules: {
         name: [val => val && val.trim().length > 0 || 'Please enter a name'],
         amount: [
@@ -123,54 +187,117 @@ export default {
         ],
         date: [val => val && val.trim().length > 0 || 'Please enter a date'],
       },
-      options: {
-        accounts: [],
-      },
     };
   },
 
   computed: {
-    isNew() {return this.selectedTransaction && !this.selectedTransaction.id},
-    title() {return this.isNew ? 'Add a transaction' : 'Edit transaction'},
-    isSaving() {return this.$store.getters['transactions/isSaving']},
-    dropdowns() {return {...this.$store.getters['items/allItems']}},
+    selected() {
+      return this.$store.getters['transactions/selectedTransaction'];
+    },
+    isNew() {
+      return this.selected && !this.selected.id;
+    },
+    title() {
+      return this.isNew ? 'Add a transaction' : `Edit transaction #${this.selected.id}`;
+    },
+    isSaving() {
+      return this.$store.getters['transactions/isSaving'];
+    },
+    dropdowns() {
+      return {...this.$store.getters['items/allItems']};
+    },
+    name: {
+      get() {
+        return this.selected.name;
+      },
+      set(value) {
+        this.setParamInSelected('name', value);
+      }
+    },
+    amount: {
+      get() {
+        return this.selected.amount;
+      },
+      set(value) {
+        this.setParamInSelected('amount', value);
+      }
+    },
+    date: {
+      get() {
+        return this.selected.date;
+      },
+      set(value) {
+        this.setParamInSelected('date', value);
+      }
+    },
+    notes: {
+      get() {
+        return this.selected.notes;
+      },
+      set(value) {
+        this.setParamInSelected('notes', value);
+      }
+    },
+    fileName: {
+      get() {
+        return this.selected.fileName;
+      },
+      set(value) {
+        this.setParamInSelected('fileName', value);
+      }
+    },
+    fileInTemp: {
+      get() {
+        return this.selected.fileInTemp;
+      },
+      set(value) {
+        this.setParamInSelected('fileInTemp', value);
+      }
+    },
   },
 
   methods: {
+    setParamInSelected(param, value) {
+      this.$store.commit('transactions/updateSelectedTransaction', {[param]: value});
+    },
     onCancel() {
       this.$store.commit('transactions/setDialog', false);
       this.$store.commit('transactions/setSelectedTransaction', null);
     },
     onSubmit() {
       if (!this.$refs.formRef.validate()) return;
-      this.$store.dispatch('transactions/saveTransaction', {transaction: this.selectedTransaction});
+      this.$store.dispatch('transactions/saveTransaction', {transaction: this.selected});
     },
-    onDateInput() {
-      console.log('-- onDateInput()');
+    fileFactory(files) {
+      return {
+        url: `${baseUrl}/documents`,
+        fieldName: this.fileName
+      };
     },
-    filterAccounts(val, update, abort) {
-      update(() => {
-        if (val === '') this.options.accounts = [...this.$store.getters['items/allItems'].accounts];
-        const needle = val.toLowerCase();
-        this.options.accounts = this.$store.getters['items/allItems'].accounts
-          .filter(item => item.name.toLowerCase().indexOf(needle) > -1);
-
-        // const accountRef = this.$refs.accountRef;
-        // if (val !== '' && accountRef.options.length > 0) {
-        //   accountRef.setOptionIndex(-1);
-        //   accountRef.moveOptionSelection(1, true);
-        // }
-      })
+    onFileAdded({files, xhr}) {
+      const res = JSON.parse(xhr.response);
+      if (res && res.fileInTemp) this.fileInTemp = res.fileInTemp;
+      else alert('Error in saving file!');
     }
   },
 
   mounted() {
-    this.selectedTransaction = {...this.$store.getters['transactions/selectedTransaction']};
-    this.options.accounts = [...this.$store.getters['items/allItems'].accounts];
   }
 };
 </script>
 
-<style scoped>
-
+<style>
+.q-uploader__list{
+  display: none !important;
+}
+/*.q-uploader {
+  border: 2px solid red !important;
+  background-color: yellow !important;
+}
+.q-uploader__list {
+  background-color: red !important;
+}
+.q-uploader__header {
+  background-color: blue !important;
+}*/
 </style>

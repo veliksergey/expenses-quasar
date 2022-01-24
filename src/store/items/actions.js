@@ -4,15 +4,13 @@ export async function getAllItems (store) {
   const types = ['accounts', 'categories', 'people', 'projects', 'vendors'];
   const allItems = store.state.allItems;
 
-  if (allItems.length) {
-    let toContinue = false;
-    types.forEach(type => {
-      if (!allItems[type] || !allItems[type].length) {
-        toContinue = true;
-      }
-    });
-    if (!toContinue) return;
-  }
+  let toContinue = false;
+  types.forEach(type => {
+    if (!allItems[type] || !allItems[type].length) {
+      toContinue = true;
+    }
+  });
+  if (!toContinue) return;
 
   try {
 

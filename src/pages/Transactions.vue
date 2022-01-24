@@ -59,6 +59,17 @@
                    class="q-mr-sm"
             ></q-btn>
 
+            <!-- edit btn -->
+            <q-btn icon='edit'
+                   dense
+                   round
+                   flat
+                   size='small'
+                   color='primary'
+                   class="q-mr-sm"
+                   @click="editTransaction(props.row)"
+            ></q-btn>
+
           </q-td>
           <q-td
             v-for="col in props.cols"
@@ -73,7 +84,7 @@
 
             <!-- account -->
             <template v-else-if="col.name === 'account'">
-              {{ props.row.account.name }}
+              {{ props.row.account?.name }}
             </template>
 
             <!-- category -->
@@ -83,7 +94,7 @@
 
             <!-- person -->
             <template v-else-if="col.name === 'person'">
-              {{ props.row.person.name }}
+              {{ props.row.person?.name }}
             </template>
 
             <!-- project -->
@@ -110,6 +121,7 @@
               <q-btn icon='edit'
                      dense
                      round
+                     flat
                      size='small'
                      color='primary'
                      class="q-mr-sm"
@@ -119,17 +131,19 @@
               <q-btn icon='delete'
                      dense
                      round
+                     flat
                      size='small'
                      color='negative'
                      class="q-mr-sm"
                      @click="deleteTransaction(props.row)"
               ></q-btn>
               <br>
+              ID: {{props.row.id}} <br>
               Notes: {{ props.row.notes }} <br>
               Related Amount: {{ props.row.relatedAmount }} <br>
               Related Date: {{ props.row.relatedDate }} <br>
               Non Taxable: {{ props.row.nonTaxable }} <br>
-              By: {{ props.row.person.name }} <br>
+              By: {{ props.row.person?.name }} <br>
             </div>
           </q-td>
         </q-tr>
@@ -156,6 +170,8 @@ export default {
     return {
       search: '',
       columns: [
+        // {name: 'actions', style: 'background-color: orange; width: 10px; padding: 0'},
+        // {name: 'id', label: 'ID', field: 'id', align: 'right'},
         {name: 'date', label: 'Date', field: 'date', align: 'center'},
         {name: 'amount', label: 'Amount', field: 'amount'},
         {name: 'name', label: 'Name', field: 'name', align: 'left'},
@@ -172,8 +188,8 @@ export default {
     isLoading() {return this.$store.getters['transactions/isLoading']},
     dialog: {
       get() {return this.$store.getters['transactions/dialog']},
-      set(newVal) {return this.$store.commit('transactions/setDialog', newVal)}
-    }
+      set(newVal) {this.$store.commit('transactions/setDialog', newVal)}
+    },
   },
 
   watch: {
