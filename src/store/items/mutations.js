@@ -23,8 +23,8 @@ export function setType(state, payload) {
 }
 
 export function updateItemInList(state, payload) {
-  const item = state.list.find(i => i.id === payload.id);
-  if (item) item.name = payload.name;
+  const idx = state.list.findIndex(i => i.id === payload.id);
+  if (idx > -1) state.list[idx] = payload;
   else state.list.unshift(payload);
 }
 

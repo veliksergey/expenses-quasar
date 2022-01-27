@@ -6,7 +6,7 @@ export function setListAndTotal (state, {list, total}) {
 }
 
 export function setSelectedTransaction (state, payload) {
-  state.selectedTransaction = payload || {...defaultTransaction};
+  state.selectedTransaction = payload ? {...payload} : {...defaultTransaction};
 }
 
 export function setDialog (state, payload) {
@@ -22,8 +22,9 @@ export function setIsSaving (state, payload) {
 }
 
 export function updateTransactionInList(state, payload) {
-  let trans = state.list.find(t => t.id === payload.id);
-  if (trans) trans = {...payload};
+  let idx = state.list.findIndex(t => t.id === payload.id);
+  console.log('-- idx:', idx);
+  if (idx > -1) state.list[idx] = payload;
   else state.list.unshift(payload);
 }
 
