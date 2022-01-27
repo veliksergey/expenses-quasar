@@ -5,7 +5,7 @@ export default function () {
     list: [],
     total: 0,
     selectedTransaction: {...defaultTransaction},
-    dialog: true,
+    dialog: false,
     isLoading: false,
     isSaving: false,
   }

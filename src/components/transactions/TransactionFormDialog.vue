@@ -139,8 +139,6 @@
         </div>
       </q-card-section>
 
-      {{selected}}
-
       <!-- actions -->
       <q-card-actions>
         <q-space></q-space>

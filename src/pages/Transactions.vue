@@ -31,6 +31,7 @@
       :columns='columns'
       row-key='id'
       :loading='!transactions.length'
+      :rows-per-page-options="[10,20,50,100, 0]"
     >
 
       <template v-slot:header="props">
@@ -113,6 +114,8 @@
             </template>
           </q-td>
         </q-tr>
+
+        <!-- expanded row -->
         <q-tr v-show="props.expand"
               :props="props">
           <q-td colspan="100%">
@@ -144,6 +147,13 @@
               Related Date: {{ props.row.relatedDate }} <br>
               Non Taxable: {{ props.row.nonTaxable }} <br>
               By: {{ props.row.person?.name }} <br>
+              Documents:
+              <a :href="`${backEndUrl}/${doc.path}`"
+                 target="_blank"
+                 v-for="doc in props.row.documents"
+                 :key="doc.id"
+                 class="q-mr-sm"
+              >{{doc.name || doc.path}}</a>
             </div>
           </q-td>
         </q-tr>
@@ -161,6 +171,7 @@
 
 <script>
 import TransactionFormDialog from 'components/transactions/TransactionFormDialog';
+import {baseUrl} from 'boot/axios';
 
 export default {
   name: 'Transactions',
@@ -176,8 +187,8 @@ export default {
         {name: 'amount', label: 'Amount', field: 'amount'},
         {name: 'name', label: 'Name', field: 'name', align: 'left'},
         {name: 'project', label: 'Project', field: 'projectId', align: 'left'},
-        {name: 'account', label: 'Account', field: 'accountId', align: 'left'},
         {name: 'vendor', label: 'Vendor', field: 'vendorId', align: 'left'},
+        {name: 'account', label: 'Account', field: 'accountId', align: 'left'},
         {name: 'category', label: 'Category', field: 'catId', align: 'left'},
       ],
     };
@@ -190,6 +201,7 @@ export default {
       get() {return this.$store.getters['transactions/dialog']},
       set(newVal) {this.$store.commit('transactions/setDialog', newVal)}
     },
+    backEndUrl() {return baseUrl},
   },
 
   watch: {
