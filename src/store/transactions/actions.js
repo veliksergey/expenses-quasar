@@ -1,16 +1,25 @@
 import {api} from 'boot/axios';
 
-export async function getList (store, {search}) {
-  store.commit('setListAndTotal', {list: [], total: 0});
+export async function getList (store, {page, rowsPerPage, sortBy, descending, filter}) {
+  store.commit('setIsLoading', true);
+  // store.commit('setListAndTotal', {list: [], total: 0});
+
+  // build url query
+  const params = new URLSearchParams({
+    page, rowsPerPage, sortBy, descending, filter
+  });
 
   try {
-    const res = await api.get('/transactions');
+    const res = await api.get(`/transactions?${params.toString()}`);
     const {result, total} = res.data;
 
     store.commit('setListAndTotal', {list: result, total});
+    store.commit('setIsLoading', false);
 
   } catch (err) {
     console.error(err);
+    store.commit('setListAndTotal', {list: [], total: 0});
+    store.commit('setIsLoading', true);
   }
 }
 

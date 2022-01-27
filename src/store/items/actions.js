@@ -37,7 +37,6 @@ export async function getList (store) {
 
   } catch (err) {
     console.error(err);
-
     store.commit('setList', []);
     store.commit('setIsLoading', false);
   }

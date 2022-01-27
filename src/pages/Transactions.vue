@@ -27,13 +27,28 @@
 
     <!-- table -->
     <q-table
+      title="Transactions"
       :rows='transactions'
       :columns='columns'
       row-key='id'
-      :loading='!transactions.length'
-      :rows-per-page-options="[10,20,50,100, 0]"
+      v-model:pagination="pagination"
+      :loading='isLoading'
+      :filter="filter"
+      @request="onRequest"
+      binary-state-sort
     >
+      <!-- :rows-per-page-options="[10,20,50,100, 0]" -->
 
+      <!-- filter -->
+      <template v-slot:top-right>
+        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+          <template v-slot:append>
+            <q-icon name="search"></q-icon>
+          </template>
+        </q-input>
+      </template>
+
+      <!-- columns -->
       <template v-slot:header="props">
         <q-tr :props="props">
           <q-th auto-width/>
@@ -183,14 +198,22 @@ export default {
       columns: [
         // {name: 'actions', style: 'background-color: orange; width: 10px; padding: 0'},
         // {name: 'id', label: 'ID', field: 'id', align: 'right'},
-        {name: 'date', label: 'Date', field: 'date', align: 'center'},
-        {name: 'amount', label: 'Amount', field: 'amount'},
-        {name: 'name', label: 'Name', field: 'name', align: 'left'},
+        {name: 'date', label: 'Date', field: 'date', align: 'center', sortable: true,},
+        {name: 'amount', label: 'Amount', field: 'amount', sortable: true,},
+        {name: 'name', label: 'Name', field: 'name', align: 'left', sortable: true},
         {name: 'project', label: 'Project', field: 'projectId', align: 'left'},
         {name: 'vendor', label: 'Vendor', field: 'vendorId', align: 'left'},
         {name: 'account', label: 'Account', field: 'accountId', align: 'left'},
         {name: 'category', label: 'Category', field: 'catId', align: 'left'},
       ],
+      filter: '',
+      pagination: {
+        sortBy: 'date',
+        descending: true,
+        page: 1,
+        rowsPerPage: 3,
+        rowsNumber: 3,
+      }
     };
   },
 
@@ -211,6 +234,21 @@ export default {
   methods: {
     async getList() {
       await this.$store.dispatch('transactions/getList', {search: ''});
+    },
+    async getTransactionsFromServer(startRow, count, filter, sortBy, descending) {
+      await this.$store.dispatch('transactions/getList', {startRow, count, filter, sortBy, descending});
+    },
+    async onRequest(props) {
+      console.log('-- onRequest()');
+      const {page, rowsPerPage, sortBy, descending} = props.pagination;
+      const filter = props.filter;
+      await this.$store.dispatch('transactions/getList', {page, rowsPerPage, sortBy, descending, filter});
+
+      this.pagination.rowsNumber = this.$store.getters['transactions/total'];
+      this.pagination.page = page;
+      this.pagination.rowsPerPage = rowsPerPage;
+      this.pagination.sortBy = sortBy;
+      this.pagination.descending = descending;
     },
     editTransaction(transaction) {
       this.$store.commit('transactions/setSelectedTransaction', transaction);
@@ -233,7 +271,9 @@ export default {
   },
 
   mounted() {
-    this.getList();
+    // this.getList();
+    console.log('-- mounted() pagination:', this.pagination);
+    this.onRequest({pagination: {...this.pagination}, filter: ''});
     this.getAllItemsForDropdowns();
   }
 
