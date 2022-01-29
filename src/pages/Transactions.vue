@@ -38,7 +38,7 @@
         />
       </template>
 
-      <!-- columns -->
+      <!-- header columns -->
       <template v-slot:header="props">
         <q-tr :props="props">
           <q-th auto-width/>
@@ -71,7 +71,7 @@
                    round
                    flat
                    size='small'
-                   :color='props.row.documents.length ? "primary" : "secondary"'
+                   :color='props.row.documents.length ? "dark" : "primary"'
                    class="q-mr-sm"
                    @click="editTransaction(props.row)"
             ></q-btn>
@@ -83,6 +83,7 @@
             :props="props"
           >
             {{ col.value }}
+<!--            <span class="text-lime-9">{{col.value}}</span>-->
           </q-td>
         </q-tr>
 
@@ -133,7 +134,7 @@
     </q-table>
 
     <!-- dialog -->
-    <q-dialog v-model="dialog">
+    <q-dialog v-model="dialog" full-width>
       <TransactionFormDialog></TransactionFormDialog>
     </q-dialog>
 
@@ -155,7 +156,7 @@ export default {
         // {name: 'actions', style: 'background-color: orange; width: 10px; padding: 0'},
         // {name: 'id', label: 'ID', field: 'id', align: 'right'},
         {name: 'date', label: 'Date', field: 'date', align: 'right', sortable: true, format: (val, row) => this.$filters.localDate(val)},
-        {name: 'amount', label: 'Amount', field: 'amount', sortable: true, format: (val, row) => this.$filters.localCurrency(val)},
+        {name: 'amount', label: 'Amount', field: 'amount', sortable: true, format: (val, row) => this.$filters.localCurrency(val), classes: (row) => {return row.type === 1 ? 'text-green-9' : 'text-pink-9'}},
         {name: 'name', label: 'Name', field: 'name', align: 'left', sortable: true},
         {name: 'project', label: 'Project', field: 'projectId', align: 'left', format: (val, row) => row.project?.name},
         {name: 'vendor', label: 'Vendor', field: 'vendorId', align: 'left', format: (val, row) => row.vendor?.name},
@@ -167,8 +168,8 @@ export default {
         sortBy: 'date',
         descending: true,
         page: 1,
-        rowsPerPage: 3,
-        rowsNumber: 3,
+        rowsPerPage: 10,
+        rowsNumber: 0, // will come from the server
       }
     };
   },
@@ -192,11 +193,7 @@ export default {
       await this.$store.dispatch('transactions/getList', {search: ''});
     },*/
     async onRequest(props) {
-      // if (!props) props = {pagination: {...this.pagination}, filter: ''};
-      console.log('-- onRequest():', props);
-
-      // on Refresh
-      if (!props) {
+      if (!props) { // on refresh -> reset some pagination params and filter
         props = {
           pagination: {
             page: 1,

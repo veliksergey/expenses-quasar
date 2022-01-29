@@ -1,6 +1,7 @@
 import moment from 'moment';
 
 export default {
+  type: 0,
   name: '',
   amount: 0.00,
   relatedAmount: null,
@@ -18,7 +19,6 @@ export default {
   person: {id: 0, name: '',},
   project: {id: 0, name: '',},
   vendor: {id: 0, name: '',},
-  // file: null,
   fileName: '',
   fileInTemp: '',
 }

@@ -1,16 +1,41 @@
 <template>
-  <q-card style="width: 600px">
+  <q-card > <!-- style="width: 600px; max-width: 80vw;" -->
     <q-form ref="formRef"
             @submit.prevent="onSubmit">
       <q-card-section class="bg-primary text-white">
         <div class="text-h6">{{ title }}</div>
       </q-card-section>
-
       <q-card-section v-if="selected">
         <div class="row">
 
+          <!-- type -->
+          <div class="col-12 col-sm-6 col-md-4 form-col">
+            <q-btn-toggle
+              v-model="type"
+              toggle-color="info"
+              no-caps
+              rounded
+              glossy
+              spread
+              :options="[{slot: 'in', value: 1},{slot: 'out', value: 0}]"
+            >
+              <template v-slot:in>
+                <div class="row items-center no-wrap">
+                  <q-icon left name="attach_money" />
+                  Money<br>In
+                </div>
+              </template>
+              <template v-slot:out>
+                <div class="row items-center no-wrap">
+                  <q-icon left name="shopping_cart" />
+                  Money<br>Out
+                </div>
+              </template>
+            </q-btn-toggle>
+          </div>
+
           <!-- date -->
-          <div class="col q-pr-sm">
+          <div class="col-12 col-sm-6 col-md-4 form-col">
             <q-input
               label="Date"
               v-model="date"
@@ -20,10 +45,10 @@
               <template v-slot:append>
                 <q-icon name="event"
                         class="cursor-pointer">
-                  <q-popup-proxy ref="qDateProxy"
+                  <q-popup-proxy
                                  cover
                                  transition-show="scale"
-                                 transition-hide="scale">
+                                 transition-hide="scale"> <!-- ref="qDateProxy" -->
                     <q-date v-model="date"
                             v-close-popup>
                       <div class="row items-center justify-end">
@@ -40,7 +65,7 @@
           </div>
 
           <!-- amount -->
-          <div class="col q-pl-sm">
+          <div class="col-12 col-sm-6 col-md-4 form-col">
             <q-input
               label="Amount"
               v-model="amount"
@@ -53,11 +78,8 @@
             ></q-input>
           </div>
 
-        </div>
-        <div class="row">
-
           <!-- name -->
-          <div class="col q-pr-sm">
+          <div class="col-12 col-sm-6 col-md-4 form-col">
             <q-input
               label="Name"
               v-model="name"
@@ -67,43 +89,82 @@
           </div>
 
           <!-- notes -->
-          <div class="col q-pl-sm">
+          <div class="col-12 col-sm-6 col-md-4 form-col">
             <q-input
               label="Notes"
               v-model="notes"
               autogrow
             ></q-input>
           </div>
-        </div>
 
-        <!-- dropdowns -->
-        <div class="row">
-          <div class="col q-pr-sm">
-            <ItemDropdown type="project"
-                          :required="true"></ItemDropdown>
+          <!-- project -->
+          <div class="col-12 col-sm-6 col-md-4 form-col">
+            <ItemDropdown type="project" :required="true"></ItemDropdown>
           </div>
-          <div class="col q-pl-sm">
-            <ItemDropdown type="vendor"
-                          :required="true"></ItemDropdown>
+
+          <!-- vendor -->
+          <div class="col-12 col-sm-6 col-md-4 form-col">
+            <ItemDropdown type="vendor" :required="true"></ItemDropdown>
           </div>
-        </div>
-        <div class="row">
-          <div class="col q-pr-sm">
+
+          <!-- account -->
+          <div class="col-12 col-sm-6 col-md-4 form-col">
             <ItemDropdown type="account"></ItemDropdown>
           </div>
-          <div class="col q-pl-sm">
+
+          <!-- category -->
+          <div class="col-12 col-sm-6 col-md-4 form-col">
             <ItemDropdown type="category"></ItemDropdown>
           </div>
-        </div>
-        <!--        <div class="row">
-                  <div class="col-6 q-pr-sm">
-                    <ItemDropdown type="person"></ItemDropdown>
-                  </div>
-                </div>-->
 
-        <!-- file -->
-        <div class="row">
-          <div class="col q-pr-sm">
+          <!-- person -->
+          <div class="col-12 col-sm-6 col-md-4 form-col">
+            <itemDropdown type="person"></itemDropdown>
+          </div>
+
+          <!-- related Amount -->
+          <div class="col-12 col-sm-6 col-md-4 form-col">
+            <q-input
+              label="Alternative Amount"
+              v-model="relatedAmount"
+              mask="#.##"
+              fill-mask="0"
+              reverse-fill-mask
+              input-class="text-right"
+            ></q-input>
+          </div>
+
+          <!-- related date -->
+          <div class="col-12 col-sm-6 col-md-4 form-col">
+            <q-input
+              label="Related Date"
+              v-model="relatedDate"
+              mask="date"
+            >
+              <template v-slot:append>
+                <q-icon name="event"
+                        class="cursor-pointer">
+                  <q-popup-proxy
+                                 cover
+                                 transition-show="scale"
+                                 transition-hide="scale">
+                    <q-date v-model="relatedDate"
+                            v-close-popup>
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup
+                               label="Close"
+                               color="primary"
+                               flat></q-btn>
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+          </div>
+
+          <!-- file name -->
+          <div class="col-12 col-sm-6 col-md-4 form-col">
             <q-input
               label="File Name"
               v-model="fileName"
@@ -111,7 +172,9 @@
               label-color="secondary"
             ></q-input>
           </div>
-          <div class="col q-pl-sm">
+
+          <!-- file uploader -->
+          <div class="col-12 col-sm-6 col-md-4 form-col">
             <q-uploader
               label="Upload File"
               :factory="fileFactory"
@@ -125,9 +188,9 @@
             >
             </q-uploader>
           </div>
-        </div>
-        <div class="row">
-          <div class="col">
+
+          <!-- server temp file name -->
+          <div class="col-12 col-sm-6 col-md-4 form-col">
             <q-input label="Temp File Name"
                      v-model="fileInTemp"
                      readonly
@@ -136,10 +199,9 @@
                      label-color="secondary"
             ></q-input>
           </div>
+
         </div>
       </q-card-section>
-
-      <!-- actions -->
       <q-card-actions>
         <q-space></q-space>
 
@@ -201,56 +263,42 @@ export default {
     isSaving() {
       return this.$store.getters['transactions/isSaving'];
     },
-    dropdowns() {
-      return {...this.$store.getters['items/allItems']};
+    dropdowns() {return {...this.$store.getters['items/allItems']};},
+    type: {
+      get() {return this.selected.type},
+      set(value) {this.setParamInSelected('type', value)}
     },
     name: {
-      get() {
-        return this.selected.name;
-      },
-      set(value) {
-        this.setParamInSelected('name', value);
-      }
+      get() {return this.selected.name;},
+      set(value) {this.setParamInSelected('name', value)}
     },
     amount: {
-      get() {
-        return this.selected.amount;
-      },
-      set(value) {
-        this.setParamInSelected('amount', value);
-      }
+      get() {return this.selected.amount;},
+      set(value) {this.setParamInSelected('amount', value);}
+    },
+    relatedAmount: {
+      get() {return this.selected.relatedAmount},
+      set(value) {this.setParamInSelected('relatedAmount', value)}
     },
     date: {
-      get() {
-        return this.selected.date;
-      },
-      set(value) {
-        this.setParamInSelected('date', value);
-      }
+      get() {return this.selected.date;},
+      set(value) {this.setParamInSelected('date', value);}
+    },
+    relatedDate: {
+      get() {return this.selected.relatedDate},
+      set(value) {this.setParamInSelected('relatedDate', value)}
     },
     notes: {
-      get() {
-        return this.selected.notes;
-      },
-      set(value) {
-        this.setParamInSelected('notes', value);
-      }
+      get() {return this.selected.notes;},
+      set(value) {this.setParamInSelected('notes', value);}
     },
     fileName: {
-      get() {
-        return this.selected.fileName;
-      },
-      set(value) {
-        this.setParamInSelected('fileName', value);
-      }
+      get() {return this.selected.fileName;},
+      set(value) {this.setParamInSelected('fileName', value);}
     },
     fileInTemp: {
-      get() {
-        return this.selected.fileInTemp;
-      },
-      set(value) {
-        this.setParamInSelected('fileInTemp', value);
-      }
+      get() {return this.selected.fileInTemp;},
+      set(value) {this.setParamInSelected('fileInTemp', value);}
     },
   },
 
@@ -298,4 +346,15 @@ export default {
 .q-uploader__header {
   background-color: blue !important;
 }*/
+
+/* padding for columns */
+.row .form-col {
+  padding: 0 1em;
+}
+.row .form-col:nth-child(3n+3) {
+  padding-left: 1em;
+}
+.row .form-col:nth-child(3n + 1) {
+  padding-right: 1em;
+}
 </style>

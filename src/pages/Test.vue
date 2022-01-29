@@ -1,43 +1,46 @@
 <template>
   <div>
-    <h2>Test Page</h2>
 
-    <q-input label="File Name" v-model="fileName"></q-input>
-    <q-uploader
-      label="File"
-      :factory="factoryFn"
-      :auto-upload="true"
-      @uploaded="onFileAdd"
-      accept=".jpg, .jpeg, .png, .pdf, image/*"
-      max-files="1"
-      :no-thumbnails="true"
-      flat
+    <q-btn-toggle
+      v-model="model"
+      push
+      rounded
+      glossy
+      toggle-color="purple"
+      :options="[
+          {value: 'one', slot: 'one'},
+          {value: 'two', slot: 'two'},
+          {value: 'three', slot: 'three'}
+        ]"
     >
-<!--      <template v-slot:list="">-->
-<!--      </template>-->
-    </q-uploader>
+      <template v-slot:one>
+        <div class="row items-center no-wrap">
+          <div class="text-center">
+            Pick<br>boat
+          </div>
+          <q-icon right name="directions_boat" />
+        </div>
+      </template>
 
-<!--    <div class="row">
-      <div class="col">
-        <q-file
-          label="File"
-          v-model="file"
-        ></q-file>
-      </div>
-      <div class="col">
-        <q-input
-          label="File Name"
-          v-model="fileName"
-        ></q-input>
-      </div>
-    </div>
-    <br>
-    <q-btn
-      label="Submit"
-      @click="upload"
-      color="primary"
-      class="full-width"
-      ></q-btn>-->
+      <template v-slot:two>
+        <div class="row items-center no-wrap">
+          <div class="text-center">
+            Pick<br>car
+          </div>
+          <q-icon right name="directions_car" />
+        </div>
+      </template>
+
+      <template v-slot:three>
+        <div class="row items-center no-wrap">
+          <div class="text-center">
+            Pick<br>railway
+          </div>
+          <q-icon right name="directions_railway" />
+        </div>
+      </template>
+    </q-btn-toggle>
+
   </div>
 </template>
 

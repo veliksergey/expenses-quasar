@@ -23,11 +23,12 @@ export async function getList (store, {page, rowsPerPage, sortBy, descending, fi
   }
 }
 
-function transformTransaction(trans) {
-  const {name, amount, relatedAmount, date, relatedDate, nonTaxable, notes,
+function prepareTransactionForBackEnd(trans) {
+  const {type, name, amount, relatedAmount, date, relatedDate, nonTaxable, notes,
     fileName, fileInTemp, project, vendor} = trans;
   const transToReturn = {
-    name, amount, relatedAmount, date, relatedDate, nonTaxable, notes, fileName, fileInTemp,
+    type, name, amount, relatedAmount, date, relatedDate, nonTaxable, notes,
+    fileName, fileInTemp,
     project, vendor,
     accountId: trans.account?.id || null,
     categoryId: trans.category?.id || null,
@@ -42,7 +43,7 @@ function transformTransaction(trans) {
 export async function saveTransaction (store, {transaction}) {
   store.commit('setIsSaving', true);
 
-  const transToSave = transformTransaction(transaction);
+  const transToSave = prepareTransactionForBackEnd(transaction);
 
   try {
 
