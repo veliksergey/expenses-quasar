@@ -1,30 +1,6 @@
 <template>
   <div>
 
-    <!-- banner -->
-    <q-banner class="bg-primary text-white" rounded>
-      <div class="row">
-        <!-- title -->
-        <span class="q-header">Transactions</span>
-        <q-space></q-space>
-        <!-- search -->
-        <q-input v-model="search"
-                 dense
-                 color="white"
-                 class="text-white"
-        ></q-input>
-        <q-space></q-space>
-        <!-- add btn -->
-        <q-btn
-          round
-          flat
-          class="bg-primary"
-          icon="fas fa-plus"
-          @click="editTransaction()"
-          ></q-btn>
-      </div>
-    </q-banner>
-
     <!-- table -->
     <q-table
       title="Transactions"
@@ -36,16 +12,30 @@
       :filter="filter"
       @request="onRequest"
       binary-state-sort
+      table-header-class="bg-primary"
     >
       <!-- :rows-per-page-options="[10,20,50,100, 0]" -->
 
-      <!-- filter -->
-      <template v-slot:top-right>
-        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+      <!-- top-right slot -->
+      <template v-slot:top-right="props">
+        <!-- filter field -->
+        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search" class="q-mr-md">
           <template v-slot:append>
             <q-icon name="search"></q-icon>
           </template>
         </q-input>
+
+        <!-- add btn -->
+        <q-btn round flat dense icon="add" @click="editTransaction()"></q-btn>
+
+        <!-- refresh btn -->
+        <q-btn round flat dense icon="refresh" @click="onRequest()"></q-btn>
+
+        <!-- full screen btn -->
+        <q-btn flat round dense
+          :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"
+          @click="props.toggleFullscreen"
+        />
       </template>
 
       <!-- columns -->
@@ -81,7 +71,7 @@
                    round
                    flat
                    size='small'
-                   color='primary'
+                   :color='props.row.documents.length ? "primary" : "secondary"'
                    class="q-mr-sm"
                    @click="editTransaction(props.row)"
             ></q-btn>
@@ -92,41 +82,7 @@
             :key="col.name"
             :props="props"
           >
-
-            <!-- amount -->
-            <template v-if="col.name === 'amount'">
-              {{ $filters.localCurrency(props.row.amount) }}
-            </template>
-
-            <!-- account -->
-            <template v-else-if="col.name === 'account'">
-              {{ props.row.account?.name }}
-            </template>
-
-            <!-- category -->
-            <template v-else-if="col.name === 'category'">
-              {{ props.row.category?.name }}
-            </template>
-
-            <!-- person -->
-            <template v-else-if="col.name === 'person'">
-              {{ props.row.person?.name }}
-            </template>
-
-            <!-- project -->
-            <template v-else-if="col.name === 'project'">
-              {{ props.row.project.name }}
-            </template>
-
-            <!-- vendor -->
-            <template v-else-if="col.name === 'vendor'">
-              {{ props.row.vendor.name }}
-            </template>
-
-            <!-- everything else -->
-            <template v-else>
-              {{ col.value }}
-            </template>
+            {{ col.value }}
           </q-td>
         </q-tr>
 
@@ -198,13 +154,13 @@ export default {
       columns: [
         // {name: 'actions', style: 'background-color: orange; width: 10px; padding: 0'},
         // {name: 'id', label: 'ID', field: 'id', align: 'right'},
-        {name: 'date', label: 'Date', field: 'date', align: 'center', sortable: true,},
-        {name: 'amount', label: 'Amount', field: 'amount', sortable: true,},
+        {name: 'date', label: 'Date', field: 'date', align: 'right', sortable: true, format: (val, row) => this.$filters.localDate(val)},
+        {name: 'amount', label: 'Amount', field: 'amount', sortable: true, format: (val, row) => this.$filters.localCurrency(val)},
         {name: 'name', label: 'Name', field: 'name', align: 'left', sortable: true},
-        {name: 'project', label: 'Project', field: 'projectId', align: 'left'},
-        {name: 'vendor', label: 'Vendor', field: 'vendorId', align: 'left'},
-        {name: 'account', label: 'Account', field: 'accountId', align: 'left'},
-        {name: 'category', label: 'Category', field: 'catId', align: 'left'},
+        {name: 'project', label: 'Project', field: 'projectId', align: 'left', format: (val, row) => row.project?.name},
+        {name: 'vendor', label: 'Vendor', field: 'vendorId', align: 'left', format: (val, row) => row.vendor?.name},
+        {name: 'account', label: 'Account', field: 'accountId', align: 'left', format: (val, row) => row.account?.name},
+        {name: 'category', label: 'Category', field: 'catId', align: 'left', format: (val, row) => row.category?.name},
       ],
       filter: '',
       pagination: {
@@ -232,14 +188,27 @@ export default {
   },
 
   methods: {
-    async getList() {
+    /*async getList() {
       await this.$store.dispatch('transactions/getList', {search: ''});
-    },
-    async getTransactionsFromServer(startRow, count, filter, sortBy, descending) {
-      await this.$store.dispatch('transactions/getList', {startRow, count, filter, sortBy, descending});
-    },
+    },*/
     async onRequest(props) {
-      console.log('-- onRequest()');
+      // if (!props) props = {pagination: {...this.pagination}, filter: ''};
+      console.log('-- onRequest():', props);
+
+      // on Refresh
+      if (!props) {
+        props = {
+          pagination: {
+            page: 1,
+            rowsPerPage: this.pagination.rowsPerPage,
+            sortBy: 'date',
+            descending: true,
+          },
+          filter: '',
+        };
+        this.filter = '';
+      }
+
       const {page, rowsPerPage, sortBy, descending} = props.pagination;
       const filter = props.filter;
       await this.$store.dispatch('transactions/getList', {page, rowsPerPage, sortBy, descending, filter});
@@ -272,8 +241,8 @@ export default {
 
   mounted() {
     // this.getList();
-    console.log('-- mounted() pagination:', this.pagination);
     this.onRequest({pagination: {...this.pagination}, filter: ''});
+    // this.onRequest();
     this.getAllItemsForDropdowns();
   }
 

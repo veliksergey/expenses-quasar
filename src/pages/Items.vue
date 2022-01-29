@@ -1,23 +1,8 @@
 <template>
   <div>
 
-    <!-- banner -->
-    <q-banner class="bg-primary text-white" rounded>
-      <div class="row">
-        <!-- title -->
-        <span class="text-h4 pageTitle">{{ type }}</span>
-        <q-space></q-space>
-        <!-- add btn -->
-        <q-btn round
-               flat
-               class="bg-primary"
-               icon="fa fa-plus"
-               @click="editItem()"
-        ></q-btn>
-      </div>
-    </q-banner>
-
     <q-table
+      :title="title"
       :rows="items"
       :columns="columns"
       row-key="id"
@@ -25,6 +10,19 @@
       virtual-scroll
       :rows-per-page-options="[0]"
     >
+
+      <!-- top-right slot -->
+      <template v-slot:top-right="props">
+        <!-- add btn -->
+        <q-btn round flat dense icon="add" @click="editItem()"></q-btn>
+        <!-- refresh btn -->
+        <q-btn round flat dense icon="refresh" @click="onTypeChange()"></q-btn>
+        <!-- full screen btn -->
+        <q-btn flat round dense
+               :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"
+               @click="props.toggleFullscreen"
+        />
+      </template>
 
       <!-- actions -->
       <template v-slot:body-cell-actions="props">
@@ -84,7 +82,8 @@ export default {
     dialog: {
       get() {return this.$store.getters['items/dialog']},
       set(newVal) {this.$store.commit('items/setDialog', newVal)}
-    }
+    },
+    title() {return `${this.type.charAt(0).toUpperCase()}${this.type.slice(1)}`}
   },
 
   watch: {
@@ -112,7 +111,7 @@ export default {
       }).onOk(() => {
         this.$store.dispatch('items/deleteItem', {item});
       });
-    }
+    },
   },
 
   mounted() {
@@ -122,7 +121,4 @@ export default {
 </script>
 
 <style scoped>
-.pageTitle {
-  text-transform: capitalize;
-}
 </style>

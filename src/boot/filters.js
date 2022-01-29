@@ -1,4 +1,8 @@
 import {boot} from 'quasar/wrappers';
+const moment = require('moment');
+
+const userLang = navigator.language || 'es-US';
+moment.locale();
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -10,6 +14,9 @@ export default boot( ({app}) => {
     localCurrency(val) {
       // (val).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
       return currencyFormatter.format(val);
+    },
+    localDate(val) {
+      return moment(val).format('MMM DD YYYY')
     }
   }
 })

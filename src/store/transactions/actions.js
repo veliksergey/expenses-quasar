@@ -43,7 +43,6 @@ export async function saveTransaction (store, {transaction}) {
   store.commit('setIsSaving', true);
 
   const transToSave = transformTransaction(transaction);
-  console.log('-- transToSave:', transToSave);
 
   try {
 
