@@ -117,7 +117,7 @@
               Notes: {{ props.row.notes }} <br>
               Related Amount: {{ props.row.relatedAmount }} <br>
               Related Date: {{ props.row.relatedDate }} <br>
-              Non Taxable: {{ props.row.nonTaxable }} <br>
+              Taxable: {{ props.row.taxable }} <br>
               By: {{ props.row.person?.name }} <br>
               Documents:
               <a :href="`${backEndUrl}/${doc.path}`"
@@ -189,9 +189,6 @@ export default {
   },
 
   methods: {
-    /*async getList() {
-      await this.$store.dispatch('transactions/getList', {search: ''});
-    },*/
     async onRequest(props) {
       if (!props) { // on refresh -> reset some pagination params and filter
         props = {
@@ -231,16 +228,11 @@ export default {
         this.$store.dispatch('transactions/deleteTransaction', {transaction});
       });
     },
-    async getAllItemsForDropdowns() {
-      await this.$store.dispatch('items/getAllItems');
-    }
   },
 
   mounted() {
-    // this.getList();
     this.onRequest({pagination: {...this.pagination}, filter: ''});
-    // this.onRequest();
-    this.getAllItemsForDropdowns();
+    this.$store.dispatch('items/getItems', {forced: true})
   }
 
 };

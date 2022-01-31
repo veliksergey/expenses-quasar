@@ -1,15 +1,39 @@
 <template>
   <q-card > <!-- style="width: 600px; max-width: 80vw;" -->
-    <q-form ref="formRef"
-            @submit.prevent="onSubmit">
-      <q-card-section class="bg-primary text-white">
-        <div class="text-h6">{{ title }}</div>
+    <q-form ref="formRef" @submit.prevent="onSubmit">
+      <q-card-section class="bg-primary text-white text-h6">
+        <div class="row">
+          {{ title }}
+          <q-space></q-space>
+          <q-btn-toggle
+            v-model="type"
+            no-caps
+            rounded
+            unelevated
+            color="white"
+            text-color="primary"
+            toggle-color="info"
+            toggle-text-color="primary"
+            :options="[{slot: 'in', value: 1},{slot: 'out', value: 0}]"
+          >
+            <template v-slot:in>
+              <div class="row items-center no-wrap">
+                <q-icon left name="attach_money"></q-icon> In
+              </div>
+            </template>
+            <template v-slot:out>
+              <div class="row items-center no-wrap">
+                <q-icon left name="shopping_cart"></q-icon> Out
+              </div>
+            </template>
+          </q-btn-toggle>
+        </div>
       </q-card-section>
       <q-card-section v-if="selected">
         <div class="row">
 
           <!-- type -->
-          <div class="col-12 col-sm-6 col-md-4 form-col">
+<!--          <div class="col-12 col-sm-6 col-md-4 formCol">
             <q-btn-toggle
               v-model="type"
               toggle-color="info"
@@ -32,10 +56,10 @@
                 </div>
               </template>
             </q-btn-toggle>
-          </div>
+          </div>-->
 
           <!-- date -->
-          <div class="col-12 col-sm-6 col-md-4 form-col">
+          <div class="col-12 col-sm-6 col-md-4 formCol">
             <q-input
               label="Date"
               v-model="date"
@@ -65,7 +89,7 @@
           </div>
 
           <!-- amount -->
-          <div class="col-12 col-sm-6 col-md-4 form-col">
+          <div class="col-12 col-sm-6 col-md-4 formCol">
             <q-input
               label="Amount"
               v-model="amount"
@@ -73,13 +97,13 @@
               fill-mask="0"
               reverse-fill-mask
               :rules="rules.amount"
-              input-class="text-right"
+              :input-class="amountInputClasses"
               autofocus
             ></q-input>
           </div>
 
           <!-- name -->
-          <div class="col-12 col-sm-6 col-md-4 form-col">
+          <div class="col-12 col-sm-6 col-md-4 formCol">
             <q-input
               label="Name"
               v-model="name"
@@ -89,7 +113,7 @@
           </div>
 
           <!-- notes -->
-          <div class="col-12 col-sm-6 col-md-4 form-col">
+          <div class="col-12 col-sm-6 col-md-4 formCol">
             <q-input
               label="Notes"
               v-model="notes"
@@ -98,107 +122,119 @@
           </div>
 
           <!-- project -->
-          <div class="col-12 col-sm-6 col-md-4 form-col">
+          <div class="col-12 col-sm-6 col-md-4 formCol">
             <ItemDropdown type="project" :required="true"></ItemDropdown>
           </div>
 
           <!-- vendor -->
-          <div class="col-12 col-sm-6 col-md-4 form-col">
+          <div class="col-12 col-sm-6 col-md-4 formCol">
             <ItemDropdown type="vendor" :required="true"></ItemDropdown>
           </div>
 
           <!-- account -->
-          <div class="col-12 col-sm-6 col-md-4 form-col">
+          <div class="col-12 col-sm-6 col-md-4 formCol">
             <ItemDropdown type="account"></ItemDropdown>
           </div>
 
           <!-- category -->
-          <div class="col-12 col-sm-6 col-md-4 form-col">
+          <div class="col-12 col-sm-6 col-md-4 formCol">
             <ItemDropdown type="category"></ItemDropdown>
           </div>
 
-          <!-- person -->
-          <div class="col-12 col-sm-6 col-md-4 form-col">
-            <itemDropdown type="person"></itemDropdown>
-          </div>
+          <template v-if="type === 0">
 
-          <!-- related Amount -->
-          <div class="col-12 col-sm-6 col-md-4 form-col">
-            <q-input
-              label="Alternative Amount"
-              v-model="relatedAmount"
-              mask="#.##"
-              fill-mask="0"
-              reverse-fill-mask
-              input-class="text-right"
-            ></q-input>
-          </div>
+            <!-- person -->
+            <div class="col-12 col-sm-6 col-md-4 formCol">
+              <itemDropdown label="By (person)" type="person"></itemDropdown>
+            </div>
 
-          <!-- related date -->
-          <div class="col-12 col-sm-6 col-md-4 form-col">
-            <q-input
-              label="Related Date"
-              v-model="relatedDate"
-              mask="date"
-            >
-              <template v-slot:append>
-                <q-icon name="event"
-                        class="cursor-pointer">
-                  <q-popup-proxy
-                                 cover
-                                 transition-show="scale"
-                                 transition-hide="scale">
-                    <q-date v-model="relatedDate"
-                            v-close-popup>
-                      <div class="row items-center justify-end">
-                        <q-btn v-close-popup
-                               label="Close"
-                               color="primary"
-                               flat></q-btn>
-                      </div>
-                    </q-date>
-                  </q-popup-proxy>
-                </q-icon>
-              </template>
-            </q-input>
-          </div>
+            <!-- related Amount -->
+            <div class="col-12 col-sm-6 col-md-4 formCol">
+              <q-input
+                label="Alternative Amount"
+                v-model="relatedAmount"
+                mask="#.##"
+                fill-mask="0"
+                reverse-fill-mask
+                input-class="text-right"
+              ></q-input>
+            </div>
 
-          <!-- file name -->
-          <div class="col-12 col-sm-6 col-md-4 form-col">
-            <q-input
-              label="File Name"
-              v-model="fileName"
-              color="secondary"
-              label-color="secondary"
-            ></q-input>
-          </div>
+            <!-- related date -->
+            <div class="col-12 col-sm-6 col-md-4 formCol">
+              <q-input
+                label="Related Date"
+                v-model="relatedDate"
+                mask="date"
+              >
+                <template v-slot:append>
+                  <q-icon name="event"
+                          class="cursor-pointer">
+                    <q-popup-proxy
+                      cover
+                      transition-show="scale"
+                      transition-hide="scale">
+                      <q-date v-model="relatedDate"
+                              v-close-popup>
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup
+                                 label="Close"
+                                 color="primary"
+                                 flat></q-btn>
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+            </div>
 
-          <!-- file uploader -->
-          <div class="col-12 col-sm-6 col-md-4 form-col">
-            <q-uploader
-              label="Upload File"
-              :factory="fileFactory"
-              @uploaded="onFileAdded"
-              :auto-upload="true"
-              :no-thumbnails="true"
-              accept=".jpg, .jpeg, .png, .pdf, image/*"
-              max-files="1"
-              color="secondary"
-              class="full-width"
-            >
-            </q-uploader>
-          </div>
+            <!-- file name -->
+            <div class="col-12 col-sm-6 col-md-4 formCol">
+              <q-input
+                label="File Name"
+                v-model="fileName"
+                color="secondary"
+                label-color="secondary"
+              ></q-input>
+            </div>
 
-          <!-- server temp file name -->
-          <div class="col-12 col-sm-6 col-md-4 form-col">
-            <q-input label="Temp File Name"
-                     v-model="fileInTemp"
-                     readonly
-                     disable
-                     color="secondary"
-                     label-color="secondary"
-            ></q-input>
-          </div>
+            <!-- file uploader -->
+            <div class="col-12 col-sm-6 col-md-4 formCol">
+              <q-uploader
+                label="Upload File"
+                :factory="fileFactory"
+                @uploaded="onFileAdded"
+                :auto-upload="true"
+                :no-thumbnails="true"
+                accept=".jpg, .jpeg, .png, .pdf, image/*"
+                max-files="1"
+                color="secondary"
+                class="full-width"
+              >
+              </q-uploader>
+            </div>
+
+            <!-- server temp file name -->
+            <div class="col-12 col-sm-6 col-md-4 formCol">
+              <q-input label="Temp File Name"
+                       v-model="fileInTemp"
+                       readonly
+                       disable
+                       color="secondary"
+                       label-color="secondary"
+              ></q-input>
+            </div>
+
+            <!-- taxable -->
+            <div class="col-12 col-sm-6 col-md-4 formCol">
+              <q-checkbox label="Taxable"
+                          v-model="taxable"
+                          style="padding-top: 10px"
+                          ></q-checkbox>
+            </div>
+
+          </template>
 
         </div>
       </q-card-section>
@@ -258,12 +294,15 @@ export default {
       return this.selected && !this.selected.id;
     },
     title() {
-      return this.isNew ? 'Add a transaction' : `Edit transaction #${this.selected.id}`;
+      if (!this.isNew) return `Edit transaction #${this.selected.id}`;
+      else if (this.type === 0) return 'Add Expense';
+      else if (this.type === 1) return 'Add Income';
+      return 'Add transaction';
     },
     isSaving() {
       return this.$store.getters['transactions/isSaving'];
     },
-    dropdowns() {return {...this.$store.getters['items/allItems']};},
+    dropdowns() {return {...this.$store.getters['items/items']};},
     type: {
       get() {return this.selected.type},
       set(value) {this.setParamInSelected('type', value)}
@@ -300,6 +339,13 @@ export default {
       get() {return this.selected.fileInTemp;},
       set(value) {this.setParamInSelected('fileInTemp', value);}
     },
+    taxable: {
+      get() {return this.selected.taxable},
+      set(value) {this.setParamInSelected('taxable', value)}
+    },
+    amountInputClasses() {
+      return `text-${this.type === 1 ? 'green' : 'pink'}-9 text-right`;
+    }
   },
 
   methods: {
@@ -332,7 +378,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 .q-uploader__list{
   display: none !important;
 }
@@ -348,13 +394,20 @@ export default {
 }*/
 
 /* padding for columns */
-.row .form-col {
+.row .formCol {
   padding: 0 1em;
 }
-.row .form-col:nth-child(3n+3) {
+.row .formCol:nth-child(3n+3) {
   padding-left: 1em;
 }
-.row .form-col:nth-child(3n + 1) {
+.row .formCol:nth-child(3n + 1) {
   padding-right: 1em;
+}
+
+.amountInputIn {
+  color: $green-9;
+}
+.amountInputOut {
+  color: $pink-9;
 }
 </style>

@@ -7,7 +7,7 @@ export default {
   relatedAmount: null,
   date: moment().format('YYYY-MM-DD'),
   relatedDate: null,
-  nonTaxable: false,
+  taxable: true,
   notes: '',
   // accountId: 0,
   // categoryId: 0,

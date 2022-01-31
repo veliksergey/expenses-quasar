@@ -6,7 +6,7 @@ export default function () {
     isLoading: false,
     isSaving: false,
     type: null,
-    allItems: {
+    items: {
       accounts: [],
       categories: [],
       people: [],

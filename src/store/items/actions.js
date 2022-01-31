@@ -1,21 +1,31 @@
 import {api} from 'boot/axios';
 
-export async function getAllItems (store) {
+export async function getItems (store, {forced, type}) {
+  console.log('-- getItems:', forced, type);
   const types = ['accounts', 'categories', 'people', 'projects', 'vendors'];
-  const allItems = store.state.allItems;
+  const items = store.state.items;
 
-  let toContinue = false;
-  types.forEach(type => {
-    if (!allItems[type] || !allItems[type].length) {
-      toContinue = true;
-    }
-  });
-  if (!toContinue) return;
+  // check if forced. it is - don't continue
+  if (!forced) {
+    let toContinue = false;
+    types.forEach(type => {
+      if (!items[type] || !items[type].length) {
+        toContinue = true;
+      }
+    });
+    if (!toContinue) return;
+  }
+
+  // init url
+  const url = `items/${type || 'all-items'}`;
 
   try {
 
-    const res = await api.get('items/all-items');
-    store.commit('setAllItems', res.data);
+    const res = await api.get(url);
+    console.log(res.data);
+
+    const data = type ? {[type]: res.data} : res.data;
+    store.commit('setItems', data);
 
   } catch (err) {
     console.error(err);

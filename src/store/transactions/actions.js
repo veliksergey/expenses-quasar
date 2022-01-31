@@ -24,17 +24,13 @@ export async function getList (store, {page, rowsPerPage, sortBy, descending, fi
 }
 
 function prepareTransactionForBackEnd(trans) {
-  const {type, name, amount, relatedAmount, date, relatedDate, nonTaxable, notes,
-    fileName, fileInTemp, project, vendor} = trans;
-  const transToReturn = {
-    type, name, amount, relatedAmount, date, relatedDate, nonTaxable, notes,
+  const {type, name, amount, relatedAmount, date, relatedDate, taxable, notes,
     fileName, fileInTemp,
-    project, vendor,
-    accountId: trans.account?.id || null,
-    categoryId: trans.category?.id || null,
-    personId: trans.person?.id || null,
-    projectId: trans.project?.id || null,
-    vendorId: trans.vendor?.id || null,
+    account, category, person, project, vendor} = trans;
+  const transToReturn = {
+    type, name, amount, relatedAmount, date, relatedDate, taxable, notes,
+    fileName, fileInTemp,
+    account, category, person, project, vendor
   };
   if (trans.id) transToReturn.id = trans.id;
   return transToReturn;

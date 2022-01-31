@@ -23,7 +23,6 @@ export function setIsSaving (state, payload) {
 
 export function updateTransactionInList(state, payload) {
   let idx = state.list.findIndex(t => t.id === payload.id);
-  console.log('-- idx:', idx);
   if (idx > -1) state.list[idx] = payload;
   else state.list.unshift(payload);
 }

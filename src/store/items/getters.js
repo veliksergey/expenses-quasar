@@ -22,6 +22,6 @@ export function type (state) {
   return state.type;
 }
 
-export function allItems (state) {
-  return state.allItems;
+export function items (state) {
+  return state.items;
 }

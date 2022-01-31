@@ -1,98 +1,143 @@
 <template>
-  <div>
+  <div class="q-pa-md"
+       style="max-width: 300px">
+    <div class="q-gutter-md">
+      <q-badge color="secondary"
+               multi-line>
+        Model: "{{ model }}"
+      </q-badge>
 
-    <q-btn-toggle
-      v-model="model"
-      push
-      rounded
-      glossy
-      toggle-color="purple"
-      :options="[
-          {value: 'one', slot: 'one'},
-          {value: 'two', slot: 'two'},
-          {value: 'three', slot: 'three'}
-        ]"
-    >
-      <template v-slot:one>
-        <div class="row items-center no-wrap">
-          <div class="text-center">
-            Pick<br>boat
-          </div>
-          <q-icon right name="directions_boat" />
-        </div>
-      </template>
+      <q-select filled
+                v-model="model"
+                :options="options"
+                label="Standard"
+                use-input
+                input-debounce="0"
+                @filter="filterFn"
+                behavior="menu"
+                use-chips
 
-      <template v-slot:two>
-        <div class="row items-center no-wrap">
-          <div class="text-center">
-            Pick<br>car
-          </div>
-          <q-icon right name="directions_car" />
-        </div>
-      </template>
-
-      <template v-slot:three>
-        <div class="row items-center no-wrap">
-          <div class="text-center">
-            Pick<br>railway
-          </div>
-          <q-icon right name="directions_railway" />
-        </div>
-      </template>
-    </q-btn-toggle>
-
+                @new-value="newValFn"
+      /> <!-- new-value-mode="add" -->
+    </div>
   </div>
 </template>
 
 <script>
-import {api, baseUrl} from 'boot/axios';
+import {ref} from 'vue';
+
+const initedOptions = [
+  {
+    label: 'Google',
+    value: 'Google',
+    description: 'Search engine',
+    category: '1'
+  },
+  {
+    label: 'Facebook',
+    value: 'Facebook',
+    description: 'Social media',
+    category: '1'
+  },
+  {
+    label: 'Twitter',
+    value: 'Twitter',
+    description: 'Quick updates',
+    category: '2'
+  },
+  {
+    label: 'Apple',
+    value: 'Apple',
+    description: 'iStuff',
+    category: '2'
+  },
+  {
+    label: 'Oracle',
+    value: 'Oracle',
+    disable: true,
+    description: 'Databases',
+    category: '3'
+  }
+];
 
 export default {
-  name: "Test",
 
-  data() {
+  // data() {
+  //   return {
+  //     options: [...initedOptions],
+  //   }
+  // },
+
+  setup() {
+    const options = ref(initedOptions);
+    const model = ref(null);
     return {
-      file: null,
-      fileName: '',
-    }
-  },
+      // model: ref(null),
+      initedOptions,
+      options,
+      model,
 
-  computed: {
-  },
+      filterFn(val, update) {
+        if (val === '') {
+          update(() => {
+            options.value = initedOptions;
+          });
+          return;
+        }
 
-  methods: {
-    factoryFn(files) {
-      // console.log('-- factoryFn:', files);
-      // console.log('-- factoryFn file:', files[0]);
-      // console.log('-- factoryFn:', files[0].name);
-      return {
-        url: `${baseUrl}/documents`,
-        fieldName: this.fileName
+        update(
+          () => {
+            const needle = val.toLowerCase();
+            options.value = initedOptions.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
+          },
+
+          ref => {
+            if (val !== '' && ref.options.length > 0) {
+              ref.setOptionIndex(-1); // reset optionIndex in case there is something selected
+              ref.moveOptionSelection(1, true); // focus the first selectable option and do not update the input-value
+            }
+          }
+        );
+      },
+      tttTEST(val, update, abort) {
+        setTimeout(() => {
+          update(
+            () => {
+              if (val === '') {
+                options.value = stringOptions;
+              } else {
+                const needle = val.toLowerCase();
+                options.value = stringOptions.filter(v => v.toLowerCase().indexOf(needle) > -1);
+              }
+            },
+
+            // "ref" is the Vue reference to the QSelect
+            ref => {
+              if (val !== '' && ref.options.length > 0) {
+                ref.setOptionIndex(-1); // reset optionIndex in case there is something selected
+                ref.moveOptionSelection(1, true); // focus the first selectable option and do not update the input-value
+              }
+            }
+          );
+        }, 300);
+      },
+      newValFn(value, done) {
+        console.log('-- newValFn:', value);
+
+        const newObj = {
+          label: value,
+          value: value,
+          description: value,
+          category: '1'
+        };
+
+        initedOptions.push(newObj);
+
+        done(newObj);
       }
-    },
 
-    onFileAdd({files, xhr}) {
-      const res = JSON.parse(xhr.response);
-      console.log('===== res:', res);
-    },
 
-    async upload() {
-      console.log('-- file:', this.file);
-      console.log('-- file.name:', this.file.name);
-
-      const formData = new FormData();
-      formData.append('file', this.file, this.file.name);
-      formData.append('fileName', this.fileName);
-
-      const res = await api.post('documents', formData,
-        {headers: {'Content-Type': 'multipart/form-data'}});
-
-      console.log('-- res:', res);
-    }
-  },
+    };
+  }
 };
 </script>
-
-<style scoped>
-
-</style>

@@ -34,13 +34,12 @@ export function removeItemFromList(state, payload) {
   state.list.splice(idx, 1);
 }
 
-export function setAllItems(state, payload) {
-  state.allItems = payload ||
-    {
-      accounts: [],
-      categories: [],
-      people: [],
-      projects: [],
-      vendors: [],
-    };
+export function setItems(state, payload) {
+  state.items = {
+    accounts: payload.accounts || state.items.accounts || [],
+    categories: payload.categories || state.items.categories || [],
+    people: payload.people || state.items.people || [],
+    projects: payload.projects || state.items.projects || [],
+    vendors: payload.vendors || state.items.vendors || [],
+  }
 }
