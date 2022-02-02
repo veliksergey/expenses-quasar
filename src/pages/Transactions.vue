@@ -9,7 +9,7 @@
       row-key='id'
       v-model:pagination="pagination"
       :loading='isLoading'
-      :filter="filter"
+      :filter="search"
       @request="onRequest"
       binary-state-sort
       table-header-class="bg-primary"
@@ -18,8 +18,8 @@
 
       <!-- top-right slot -->
       <template v-slot:top-right="props">
-        <!-- filter field -->
-        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search" class="q-mr-md">
+        <!-- search field -->
+        <q-input borderless dense debounce="300" v-model="search" placeholder="Search" class="q-mr-md">
           <template v-slot:append>
             <q-icon name="search"></q-icon>
           </template>
@@ -163,7 +163,6 @@ export default {
         {name: 'account', label: 'Account', field: 'accountId', align: 'left', format: (val, row) => row.account?.name},
         {name: 'category', label: 'Category', field: 'catId', align: 'left', format: (val, row) => row.category?.name},
       ],
-      filter: '',
       pagination: {
         sortBy: 'date',
         descending: true,
@@ -190,7 +189,7 @@ export default {
 
   methods: {
     async onRequest(props) {
-      if (!props) { // on refresh -> reset some pagination params and filter
+      if (!props) { // on refresh -> reset some pagination params and search
         props = {
           pagination: {
             page: 1,
@@ -200,12 +199,12 @@ export default {
           },
           filter: '',
         };
-        this.filter = '';
+        this.search = '';
       }
 
       const {page, rowsPerPage, sortBy, descending} = props.pagination;
-      const filter = props.filter;
-      await this.$store.dispatch('transactions/getList', {page, rowsPerPage, sortBy, descending, filter});
+      const search = props.filter;
+      await this.$store.dispatch('transactions/getList', {page, rowsPerPage, sortBy, descending, search});
 
       this.pagination.rowsNumber = this.$store.getters['transactions/total'];
       this.pagination.page = page;

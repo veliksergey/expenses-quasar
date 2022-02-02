@@ -1,12 +1,12 @@
 import {api} from 'boot/axios';
 
-export async function getList (store, {page, rowsPerPage, sortBy, descending, filter}) {
+export async function getList (store, {page, rowsPerPage, sortBy, descending, search}) {
   store.commit('setIsLoading', true);
   // store.commit('setListAndTotal', {list: [], total: 0});
 
   // build url query
   const params = new URLSearchParams({
-    page, rowsPerPage, sortBy, descending, filter
+    page, rowsPerPage, sortBy, descending, search
   });
 
   try {

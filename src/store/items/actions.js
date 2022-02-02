@@ -1,7 +1,6 @@
 import {api} from 'boot/axios';
 
 export async function getItems (store, {forced, type}) {
-  console.log('-- getItems:', forced, type);
   const types = ['accounts', 'categories', 'people', 'projects', 'vendors'];
   const items = store.state.items;
 
