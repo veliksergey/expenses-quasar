@@ -6,7 +6,16 @@ export function setListAndTotal (state, {list, total}) {
 }
 
 export function setSelectedTransaction (state, payload) {
-  state.selectedTransaction = payload ? {...payload} : {...defaultTransaction};
+  if (payload){
+    state.selectedTransaction = {...payload};
+    return;
+  }
+
+  const lastSavedTrans = localStorage.getItem('lastSavedTransaction');
+  const lastSavedDate = lastSavedTrans ? JSON.parse(lastSavedTrans)?.date || null : null;
+  const transToSave = {...defaultTransaction};
+  if (lastSavedDate) transToSave.date = lastSavedDate;
+  state.selectedTransaction = {...transToSave};
 }
 
 export function setDialog (state, payload) {

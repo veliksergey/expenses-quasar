@@ -23,6 +23,21 @@ export async function getList (store, {page, rowsPerPage, sortBy, descending, se
   }
 }
 
+export async function getPossibleDuplicates (store, {id, date, amount}) {
+  if (!id) id = '';
+  const params = new URLSearchParams({date, amount, id})
+  try {
+    const res = await api.get(`/transactions/duplicates?${params.toString()}`);
+    const {result, total} = res.data;
+    if (total > 0) {
+      alert(`Found ${total} possible duplicates. See console`);
+      console.warn(result);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 function prepareTransactionForBackEnd(trans) {
   const {type, name, amount, relatedAmount, date, relatedDate, taxable, notes,
     fileName, fileInTemp,
@@ -52,6 +67,8 @@ export async function saveTransaction (store, {transaction}) {
       alert(data.errMsg);
       throw new Error(data.errMsg);
     }
+
+    localStorage.setItem('lastSavedTransaction', JSON.stringify(data));
 
     store.commit('updateTransactionInList', data);
     store.commit('setIsSaving', false);

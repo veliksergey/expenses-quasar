@@ -19,13 +19,9 @@ export async function getItems (store, {forced, type}) {
   const url = `items/${type || 'all-items'}`;
 
   try {
-
     const res = await api.get(url);
-    console.log(res.data);
-
     const data = type ? {[type]: res.data} : res.data;
     store.commit('setItems', data);
-
   } catch (err) {
     console.error(err);
   }

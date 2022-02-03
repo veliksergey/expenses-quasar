@@ -73,8 +73,7 @@
                                  cover
                                  transition-show="scale"
                                  transition-hide="scale"> <!-- ref="qDateProxy" -->
-                    <q-date v-model="date"
-                            v-close-popup>
+                    <q-date v-model="date">
                       <div class="row items-center justify-end">
                         <q-btn v-close-popup
                                label="Close"
@@ -283,6 +282,7 @@ export default {
         ],
         date: [val => val && val.trim().length > 0 || 'Please enter a date'],
       },
+      timer: null,
     };
   },
 
@@ -348,7 +348,24 @@ export default {
     }
   },
 
+  watch: {
+    date(newDate) {
+      this.checkPossibleDuplicates();
+    },
+    amount(newAmount) {
+      this.checkPossibleDuplicates();
+    }
+  },
+
   methods: {
+    checkPossibleDuplicates() {
+      if (this.timer) clearTimeout(this.timer);
+      this.timer = setTimeout(() => {
+        if (this.date && this.amount) {
+          this.$store.dispatch('transactions/getPossibleDuplicates', {date: this.date, amount: this.amount, id: this.selected.id || '',})
+        }
+      }, 900);
+    },
     setParamInSelected(param, value) {
       this.$store.commit('transactions/updateSelectedTransaction', {[param]: value});
     },
@@ -373,7 +390,8 @@ export default {
     }
   },
 
-  mounted() {
+  beforeUnmount() {
+    if (this.timer) clearTimeout(this.timer);
   }
 };
 </script>
