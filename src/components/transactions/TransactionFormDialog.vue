@@ -65,6 +65,7 @@
               v-model="date"
               mask="date"
               :rules="rules.date"
+              autofocus
             >
               <template v-slot:append>
                 <q-icon name="event"
@@ -97,7 +98,6 @@
               reverse-fill-mask
               :rules="rules.amount"
               :input-class="amountInputClasses"
-              autofocus
             ></q-input>
           </div>
 
@@ -107,7 +107,6 @@
               label="Name"
               v-model="name"
               lazy-rules
-              :rules="rules.name"
             ></q-input>
           </div>
 
@@ -132,12 +131,12 @@
 
           <!-- account -->
           <div class="col-12 col-sm-6 col-md-4 formCol">
-            <ItemDropdown type="account"></ItemDropdown>
+            <ItemDropdown type="account" :required="true"></ItemDropdown>
           </div>
 
           <!-- category -->
           <div class="col-12 col-sm-6 col-md-4 formCol">
-            <ItemDropdown type="category"></ItemDropdown>
+            <ItemDropdown type="category" :required="true"></ItemDropdown>
           </div>
 
           <template v-if="type === 0">
@@ -225,14 +224,6 @@
               ></q-input>
             </div>
 
-            <!-- taxable -->
-            <div class="col-12 col-sm-6 col-md-4 formCol">
-              <q-checkbox label="Taxable"
-                          v-model="taxable"
-                          style="padding-top: 10px"
-                          ></q-checkbox>
-            </div>
-
           </template>
 
         </div>
@@ -275,7 +266,7 @@ export default {
   data() {
     return {
       rules: {
-        name: [val => val && val.trim().length > 0 || 'Please enter a name'],
+        // name: [val => val && val.trim().length > 0 || 'Please enter a name'],
         amount: [
           val => val !== null && val !== '' || 'Please enter an amount',
           val => val > 0 || 'Amount cannot be negative'
@@ -338,10 +329,6 @@ export default {
     fileInTemp: {
       get() {return this.selected.fileInTemp;},
       set(value) {this.setParamInSelected('fileInTemp', value);}
-    },
-    taxable: {
-      get() {return this.selected.taxable},
-      set(value) {this.setParamInSelected('taxable', value)}
     },
     amountInputClasses() {
       return `text-${this.type === 1 ? 'green' : 'pink'}-9 text-right`;

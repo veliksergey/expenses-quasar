@@ -39,11 +39,11 @@ export async function getPossibleDuplicates (store, {id, date, amount}) {
 }
 
 function prepareTransactionForBackEnd(trans) {
-  const {type, name, amount, relatedAmount, date, relatedDate, taxable, notes,
+  const {type, name, amount, relatedAmount, date, relatedDate, notes,
     fileName, fileInTemp,
     account, category, person, project, vendor} = trans;
   const transToReturn = {
-    type, name, amount, relatedAmount, date, relatedDate, taxable, notes,
+    type, name, amount, relatedAmount, date, relatedDate, notes,
     fileName, fileInTemp,
     account, category, person, project, vendor
   };

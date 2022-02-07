@@ -117,7 +117,6 @@
               Notes: {{ props.row.notes }} <br>
               Related Amount: {{ props.row.relatedAmount }} <br>
               Related Date: {{ props.row.relatedDate }} <br>
-              Taxable: {{ props.row.taxable }} <br>
               By: {{ props.row.person?.name }} <br>
               Documents:
               <a :href="`${backEndUrl}/${doc.path}`"
