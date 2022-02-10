@@ -10,7 +10,7 @@
       v-model:pagination="pagination"
       :loading='isLoading'
       :filter="search"
-      @request="onRequest"
+      @request="getTransactions"
       binary-state-sort
       table-header-class="bg-primary"
     >
@@ -25,11 +25,16 @@
           </template>
         </q-input>
 
+        <!-- filters -->
+        <q-btn round flat dense icon="filter_alt" @click="filtersDialog = true">
+          <q-badge floating rounded color="secondary" v-if="filtersCount">{{ filtersCount }}</q-badge>
+        </q-btn>
+
         <!-- add btn -->
         <q-btn round flat dense icon="add" @click="editTransaction()"></q-btn>
 
         <!-- refresh btn -->
-        <q-btn round flat dense icon="refresh" @click="onRequest()"></q-btn>
+        <q-btn round flat dense icon="refresh" @click="getTransactions({resetFilters: true, resetPagination: true,})"></q-btn>
 
         <!-- full screen btn -->
         <q-btn flat round dense
@@ -132,9 +137,14 @@
 
     </q-table>
 
-    <!-- dialog -->
-    <q-dialog v-model="dialog" full-width>
+    <!-- form dialog -->
+    <q-dialog v-model="formDialog" full-width>
       <TransactionFormDialog></TransactionFormDialog>
+    </q-dialog>
+
+    <!-- filters dialog -->
+    <q-dialog v-model="filtersDialog" @before-hide="onFiltersDialogClose">
+      <TransactionFiltersDialog></TransactionFiltersDialog>
     </q-dialog>
 
   </div>
@@ -142,18 +152,19 @@
 
 <script>
 import TransactionFormDialog from 'components/transactions/TransactionFormDialog';
+import TransactionFiltersDialog from 'components/transactions/TransactionFiltersDialog';
 import {baseUrl} from 'boot/axios';
 
 export default {
   name: 'Transactions',
-  components: {TransactionFormDialog},
+  components: {TransactionFormDialog, TransactionFiltersDialog},
 
   data() {
     return {
       search: '',
       columns: [
         // {name: 'actions', style: 'background-color: orange; width: 10px; padding: 0'},
-        // {name: 'id', label: 'ID', field: 'id', align: 'right'},
+        {name: 'id', label: 'ID', field: 'id', align: 'right'},
         {name: 'date', label: 'Date', field: 'date', align: 'right', sortable: true, format: (val, row) => this.$filters.localDate(val)},
         {name: 'amount', label: 'Amount', field: 'amount', sortable: true, format: (val, row) => this.$filters.localCurrency(val), classes: (row) => {return row.type === 1 ? 'text-green-9' : 'text-pink-9'}},
         {name: 'name', label: 'Name', field: 'name', align: 'left', sortable: true},
@@ -168,18 +179,23 @@ export default {
         page: 1,
         rowsPerPage: 10,
         rowsNumber: 0, // will come from the server
-      }
+      },
     };
   },
 
   computed: {
+    backEndUrl() {return baseUrl},
     transactions() {return this.$store.getters['transactions/list']},
     isLoading() {return this.$store.getters['transactions/isLoading']},
-    dialog: {
+    formDialog: {
       get() {return this.$store.getters['transactions/dialog']},
       set(newVal) {this.$store.commit('transactions/setDialog', newVal)}
     },
-    backEndUrl() {return baseUrl},
+    filtersDialog: {
+      get() {return this.$store.getters['transactions/filtersDialog']},
+      set(newVal) {this.$store.commit('transactions/setFiltersDialog', newVal)}
+    },
+    filtersCount() {return this.$store.getters['transactions/filtersCount']},
   },
 
   watch: {
@@ -187,8 +203,12 @@ export default {
   },
 
   methods: {
-    async onRequest(props) {
-      if (!props) { // on refresh -> reset some pagination params and search
+    async getTransactions(props) {
+      const resetPagination = !!props?.resetPagination;
+      const resetFilters = !!props?.resetFilters;
+
+      // reset pagination and search
+      if (!props || resetPagination) { // on refresh -> reset some pagination params and search
         props = {
           pagination: {
             page: 1,
@@ -201,10 +221,15 @@ export default {
         this.search = '';
       }
 
+      // reset filters
+      if (resetFilters) this.$store.commit('transactions/setFilters');
+
+      // prepare params for getList
       const {page, rowsPerPage, sortBy, descending} = props.pagination;
       const search = props.filter;
       await this.$store.dispatch('transactions/getList', {page, rowsPerPage, sortBy, descending, search});
 
+      // set pagination
       this.pagination.rowsNumber = this.$store.getters['transactions/total'];
       this.pagination.page = page;
       this.pagination.rowsPerPage = rowsPerPage;
@@ -226,10 +251,13 @@ export default {
         this.$store.dispatch('transactions/deleteTransaction', {transaction});
       });
     },
+    onFiltersDialogClose() {
+      this.getTransactions();
+    }
   },
 
   mounted() {
-    this.onRequest({pagination: {...this.pagination}, filter: ''});
+    this.getTransactions({pagination: {...this.pagination}, filter: '', resetFilters: true});
     this.$store.dispatch('items/getItems', {forced: true})
   }
 

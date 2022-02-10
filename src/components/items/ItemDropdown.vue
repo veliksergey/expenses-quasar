@@ -31,12 +31,16 @@ export default {
       type: String,
       required: true,
     },
+    label: {
+      type: String,
+    },
     required: {
       type: Boolean,
       default: false,
     },
-    label: {
+    storeItem: {
       type: String,
+      required: true,
     }
   },
 
@@ -61,9 +65,15 @@ export default {
       else return `${this.type}s`
     },
     model: {
-      get() {return this.$store.getters['transactions/selectedTransaction'][this.type]},
+      get() {
+        return this.$store.getters[`transactions/${this.storeItem}`][this.type]
+      },
       set(item) {
-        this.$store.commit('transactions/updateItemInSelectedTransaction', {type: this.type, item})
+        let actionStr = '';
+        if (this.storeItem === 'selectedTransaction') actionStr = 'updateItemInSelectedTransaction';
+        else if (this.storeItem === 'filters') actionStr = 'updateItemInFilters';
+        else alert('Unknown storeItem');
+        this.$store.commit(`transactions/${actionStr}`, {type: this.type, item})
       }
     },
   },
@@ -76,6 +86,8 @@ export default {
           const needle = val.toLowerCase();
           this.options = this.$store.getters['items/items'][this.typePlural]
             .filter(item => item.name.toLowerCase().indexOf(needle) > -1);
+
+          // this.options.unshift({id: 0, name: '-- All --'});
         },
         ref => {
           if (val !== '' && ref.options.length > 0) {
@@ -88,7 +100,7 @@ export default {
   },
 
   mounted() {
-    this.options = [...this.$store.getters['items/items'][this.typePlural]];
+    // this.options = [...this.$store.getters['items/items'][this.typePlural]];
   }
 };
 </script>

@@ -20,3 +20,15 @@ export function isLoading (state) {
 export function isSaving (state) {
   return state.isSaving;
 }
+
+export function filters (state) {
+  return state.filters;
+}
+export function filtersDialog (state) {
+  return state.filtersDialog;
+}
+export function filtersCount (state) {
+  return Object.values(state.filters)
+    .filter(v => !!v)
+    .length;
+}

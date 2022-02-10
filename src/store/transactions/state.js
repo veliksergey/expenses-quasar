@@ -1,4 +1,4 @@
-import defaultTransaction from './defaultTransaction';
+import {defaultFilters, defaultTransaction} from './defaultTransaction';
 
 export default function () {
   return {
@@ -8,5 +8,7 @@ export default function () {
     dialog: false,
     isLoading: false,
     isSaving: false,
+    filters: {...defaultFilters},
+    filtersDialog: false,
   }
 }

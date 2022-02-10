@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-export default {
+const defaultTransaction = {
   type: 0,
   name: '',
   amount: 0.00,
@@ -21,3 +21,15 @@ export default {
   fileName: '',
   fileInTemp: '',
 }
+
+const defaultFilters = {
+  account: null,
+  category: null,
+  person: null,
+  project: null,
+  vendor: null,
+  date: '',
+  type: '',
+}
+
+export {defaultTransaction, defaultFilters}

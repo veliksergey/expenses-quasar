@@ -4,10 +4,19 @@ export async function getList (store, {page, rowsPerPage, sortBy, descending, se
   store.commit('setIsLoading', true);
   // store.commit('setListAndTotal', {list: [], total: 0});
 
-  // build url query
-  const params = new URLSearchParams({
-    page, rowsPerPage, sortBy, descending, search
+  // filters
+  const filtersObj = {};
+  const strFilters = store.state.filters;
+  Object.keys(strFilters).forEach(item => {
+    if (strFilters[item]) {
+      if (typeof strFilters[item] === 'string') filtersObj[item] = strFilters[item]; // if value in filter is string (date, type, etc)
+      else if (strFilters[item].id) filtersObj[`${item}Id`] = strFilters[item].id; // if value is an object (account, category, etc) {id: 0, name: ''}
+    }
   });
+  const filters = JSON.stringify(filtersObj);
+
+  // build url query
+  const params = new URLSearchParams({page, rowsPerPage, sortBy, descending, search, filters});
 
   try {
     const res = await api.get(`/transactions?${params.toString()}`);
@@ -23,9 +32,12 @@ export async function getList (store, {page, rowsPerPage, sortBy, descending, se
   }
 }
 
-export async function getPossibleDuplicates (store, {id, date, amount}) {
+export async function getPossibleDuplicates (store, {id, date, amount, relatedDate, relatedAmount}) {
   if (!id) id = '';
-  const params = new URLSearchParams({date, amount, id})
+  if (!relatedDate) relatedDate = '';
+  if (!relatedAmount) relatedAmount = '';
+
+  const params = new URLSearchParams({date, amount, relatedDate, relatedAmount, id})
   try {
     const res = await api.get(`/transactions/duplicates?${params.toString()}`);
     const {result, total} = res.data;

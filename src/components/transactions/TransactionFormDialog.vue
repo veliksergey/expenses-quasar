@@ -121,29 +121,29 @@
 
           <!-- project -->
           <div class="col-12 col-sm-6 col-md-4 formCol">
-            <ItemDropdown type="project" :required="true"></ItemDropdown>
+            <ItemDropdown type="project" :required="true" storeItem="selectedTransaction"></ItemDropdown>
           </div>
 
           <!-- vendor -->
           <div class="col-12 col-sm-6 col-md-4 formCol">
-            <ItemDropdown type="vendor" :required="true"></ItemDropdown>
+            <ItemDropdown type="vendor" :required="true" storeItem="selectedTransaction"></ItemDropdown>
           </div>
 
           <!-- account -->
           <div class="col-12 col-sm-6 col-md-4 formCol">
-            <ItemDropdown type="account" :required="true"></ItemDropdown>
+            <ItemDropdown type="account" :required="true" storeItem="selectedTransaction"></ItemDropdown>
           </div>
 
           <!-- category -->
           <div class="col-12 col-sm-6 col-md-4 formCol">
-            <ItemDropdown type="category" :required="true"></ItemDropdown>
+            <ItemDropdown type="category" :required="true" storeItem="selectedTransaction"></ItemDropdown>
           </div>
 
-          <template v-if="type === 0">
+          <template v-if="type === 0"> <!-- out -->
 
             <!-- person -->
             <div class="col-12 col-sm-6 col-md-4 formCol">
-              <itemDropdown label="By (person)" type="person"></itemDropdown>
+              <ItemDropdown type="person" label="By (person)" storeItem="selectedTransaction"></ItemDropdown>
             </div>
 
             <!-- related Amount -->
@@ -336,12 +336,10 @@ export default {
   },
 
   watch: {
-    date(newDate) {
-      this.checkPossibleDuplicates();
-    },
-    amount(newAmount) {
-      this.checkPossibleDuplicates();
-    }
+    date() {this.checkPossibleDuplicates()},
+    amount() {this.checkPossibleDuplicates()},
+    relatedDate() {this.checkPossibleDuplicates()},
+    relatedAmount() {this.checkPossibleDuplicates()},
   },
 
   methods: {
@@ -349,9 +347,15 @@ export default {
       if (this.timer) clearTimeout(this.timer);
       this.timer = setTimeout(() => {
         if (this.date && this.amount) {
-          this.$store.dispatch('transactions/getPossibleDuplicates', {date: this.date, amount: this.amount, id: this.selected.id || '',})
+          this.$store.dispatch('transactions/getPossibleDuplicates', {
+            date: this.date,
+            amount: this.amount,
+            relatedDate: this.relatedDate,
+            relatedAmount: this.relatedAmount,
+            id: this.selected.id || '',
+          });
         }
-      }, 900);
+      }, 1000);
     },
     setParamInSelected(param, value) {
       this.$store.commit('transactions/updateSelectedTransaction', {[param]: value});
