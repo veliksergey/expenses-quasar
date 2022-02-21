@@ -66,6 +66,7 @@
               mask="date"
               :rules="rules.date"
               autofocus
+              :hint="$filters.localDate(date)"
             >
               <template v-slot:append>
                 <q-icon name="event"

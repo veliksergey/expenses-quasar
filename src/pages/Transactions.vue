@@ -147,6 +147,16 @@
       <TransactionFiltersDialog></TransactionFiltersDialog>
     </q-dialog>
 
+    <br>
+    <q-btn @click="calculateTotal" size="sm" dense>Calculate Total</q-btn>
+    <br>
+    <span v-if="sum.in || sum.out">
+      Rows: {{transactions.length}}<br>
+      In: <span class="text-green-9">{{$filters.localCurrency(sum.in)}}</span><br>
+      Out: <span class="text-pink-9">{{$filters.localCurrency(sum.out)}}</span><br>
+      Total: {{$filters.localCurrency(sum.together)}}
+    </span>
+
   </div>
 </template>
 
@@ -164,7 +174,7 @@ export default {
       search: '',
       columns: [
         // {name: 'actions', style: 'background-color: orange; width: 10px; padding: 0'},
-        {name: 'id', label: 'ID', field: 'id', align: 'right'},
+        {name: 'id', label: 'ID', field: 'id', align: 'right', sortable: true,},
         {name: 'date', label: 'Date', field: 'date', align: 'right', sortable: true, format: (val, row) => this.$filters.localDate(val)},
         {name: 'amount', label: 'Amount', field: 'amount', sortable: true, format: (val, row) => this.$filters.localCurrency(val), classes: (row) => {return row.type === 1 ? 'text-green-9' : 'text-pink-9'}},
         {name: 'name', label: 'Name', field: 'name', align: 'left', sortable: true},
@@ -180,6 +190,7 @@ export default {
         rowsPerPage: 10,
         rowsNumber: 0, // will come from the server
       },
+      sum: {in: 0, out: 0, together: 0,},
     };
   },
 
@@ -253,7 +264,21 @@ export default {
     },
     onFiltersDialogClose() {
       this.getTransactions();
-    }
+    },
+    calculateTotal() {
+      const getByType = (type) => {
+        return this.transactions
+          .filter(t => t.type === type)
+          .map(t => t.amount)
+          .reduce((prev, current) => prev + (current * 100), 0);
+      }
+      const outCents = getByType(0);
+      const inCents = getByType(1);
+      const togetherCents = inCents - outCents;
+      this.sum.out = outCents / 100;
+      this.sum.in = inCents / 100;
+      this.sum.together = togetherCents / 100;
+    },
   },
 
   mounted() {
