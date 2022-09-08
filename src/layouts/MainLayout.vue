@@ -25,30 +25,17 @@
 
       <!-- left nav -->
       <q-list>
-        <q-item to='/'
-                exact>
+        <q-item v-for="link in leftTopLinks" :key="link.label" :to="link.href" exact>
           <q-item-section avatar>
-            <q-icon name='fas fa-wallet'></q-icon>
+            <q-icon :name="link.icon"></q-icon>
           </q-item-section>
-          <q-item-section>
-            Transactions
-          </q-item-section>
-        </q-item>
-
-        <q-item to='/test'
-                exact>
-          <q-item-section avatar>
-            <q-icon name='mdi-help-circle'></q-icon>
-          </q-item-section>
-          <q-item-section>
-            Test
-          </q-item-section>
+          <q-item-section>{{link.label}}</q-item-section>
         </q-item>
 
         <q-separator spaced></q-separator>
         <q-item-label header>Settings</q-item-label>
 
-        <q-item v-for='link in leftLinks' :key='link.label' :to="link.href">
+        <q-item v-for='link in leftBottomLinks' :key='link.label' :to="link.href">
           <q-item-section avatar><q-icon :name='link.icon'></q-icon></q-item-section>
           <q-item-section>{{link.label}}</q-item-section>
         </q-item>
@@ -92,7 +79,12 @@ export default {
   },
   data() {
     return {
-      leftLinks: [
+      leftTopLinks: [
+        {label: 'Transactions', icon: 'fas fa-wallet', href: '/'},
+        {label: 'Report', icon: 'mdi-file-chart', href: '/report'},
+        {label: 'Test', icon: 'mdi-help-circle', href: '/test'},
+      ],
+      leftBottomLinks: [
         {label: 'Accounts', icon: 'mdi-bank', href: '/items/accounts'},
         {label: 'Categories', icon: 'fas fa-cat', href: '/items/categories'},
         {label: 'People', icon: 'fas fa-user', href: '/items/people'},

@@ -122,29 +122,29 @@
 
           <!-- project -->
           <div class="col-12 col-sm-6 col-md-4 formCol">
-            <ItemDropdown type="project" :required="true" storeItem="selectedTransaction"></ItemDropdown>
+            <ItemDropdown type="project" :required="true" :item="selected.project" @update="updateItem"></ItemDropdown>
           </div>
 
           <!-- vendor -->
           <div class="col-12 col-sm-6 col-md-4 formCol">
-            <ItemDropdown type="vendor" :required="true" storeItem="selectedTransaction"></ItemDropdown>
+            <ItemDropdown type="vendor" :required="true" :item="selected.vendor" @update="updateItem"></ItemDropdown>
           </div>
 
           <!-- account -->
           <div class="col-12 col-sm-6 col-md-4 formCol">
-            <ItemDropdown type="account" :required="true" storeItem="selectedTransaction"></ItemDropdown>
+            <ItemDropdown type="account" :required="true" :item="selected.account" @update="updateItem"></ItemDropdown>
           </div>
 
           <!-- category -->
           <div class="col-12 col-sm-6 col-md-4 formCol">
-            <ItemDropdown type="category" :required="true" storeItem="selectedTransaction"></ItemDropdown>
+            <ItemDropdown type="category" :required="true" :item="selected.category" @update="updateItem"></ItemDropdown>
           </div>
 
           <template v-if="type === 0"> <!-- out -->
 
             <!-- person -->
             <div class="col-12 col-sm-6 col-md-4 formCol">
-              <ItemDropdown type="person" label="By (person)" storeItem="selectedTransaction"></ItemDropdown>
+              <ItemDropdown type="person" label="By (person)" :item="selected.person" @update="updateItem"></ItemDropdown>
             </div>
 
             <!-- related Amount -->
@@ -333,7 +333,7 @@ export default {
     },
     amountInputClasses() {
       return `text-${this.type === 1 ? 'green' : 'pink'}-9 text-right`;
-    }
+    },
   },
 
   watch: {
@@ -379,6 +379,9 @@ export default {
       const res = JSON.parse(xhr.response);
       if (res && res.fileInTemp) this.fileInTemp = res.fileInTemp;
       else alert('Error in saving file!');
+    },
+    updateItem({type, item}) {
+      this.$store.commit(`transactions/updateItemInSelectedTransaction`, {type, item})
     }
   },
 

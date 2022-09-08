@@ -9,27 +9,27 @@
 
           <!-- project -->
           <div class="col-12 col-sm-6 filterCol">
-            <ItemDropdown type="project" storeItem="filters"></ItemDropdown>
+            <ItemDropdown type="project" :item="filters.project" @update="updateItem"></ItemDropdown>
           </div>
 
           <!-- vendor -->
           <div class="col-12 col-sm-6 filterCol">
-            <ItemDropdown type="vendor" storeItem="filters"></ItemDropdown>
+            <ItemDropdown type="vendor" :item="filters.vendor" @update="updateItem"></ItemDropdown>
           </div>
-          
+
           <!-- account -->
           <div class="col-12 col-sm-6 filterCol">
-            <ItemDropdown type="account" storeItem="filters"></ItemDropdown>
+            <ItemDropdown type="account" :item="filters.account" @update="updateItem"></ItemDropdown>
           </div>
 
           <!-- category -->
           <div class="col-12 col-sm-6 filterCol">
-            <ItemDropdown type="category" storeItem="filters"></ItemDropdown>
+            <ItemDropdown type="category" :item="filters.category" @update="updateItem"></ItemDropdown>
           </div>
 
           <!-- person -->
           <div class="col-12 col-sm-6 filterCol">
-            <ItemDropdown type="person" storeItem="filters"></ItemDropdown>
+            <ItemDropdown type="person" :item="filters.person" @update="updateItem"></ItemDropdown>
           </div>
 
           <!-- date -->
@@ -77,7 +77,7 @@ export default {
     filters() {
       return this.$store.getters['transactions/filters'];
     },
-    accountId: {
+    /*accountId: {
       get() {return this.filters.accountId},
       set(value) {this.setParamInFilters('accountId', value)}
     },
@@ -104,7 +104,7 @@ export default {
     type: {
       get() {return this.filters.type},
       set(value) {this.setParamInFilters('type', value)}
-    },
+    },*/
   },
 
   methods: {
@@ -117,6 +117,9 @@ export default {
     setParamInFilters(param, value) {
       this.$store.commit('transactions/setFilters', {[param]: value});
     },
+    updateItem({type, item}) {
+      this.$store.commit(`transactions/updateItemInFilters`, {type, item})
+    }
   }
 };
 </script>

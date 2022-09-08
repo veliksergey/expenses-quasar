@@ -19,6 +19,7 @@
         <q-chip dense v-if="opt && typeof opt === 'object' && opt.id">{{ opt.name }}</q-chip>
       </template>
     </q-select>
+<!--    {{$store.state.transactions.selectedTransaction[type]}}-->
   </div>
 </template>
 
@@ -38,8 +39,12 @@ export default {
       type: Boolean,
       default: false,
     },
-    storeItem: {
+    /*storeItem: {
       type: String,
+      required: true,
+    }*/
+    item: {
+      type: Object,
       required: true,
     }
   },
@@ -59,13 +64,19 @@ export default {
       return this.label || this.type.charAt(0).toUpperCase() + this.type.slice(1);
     },
     typePlural() {
-      const t = this.type;
+      const t = this.type.toLowerCase();
       if (t === 'category') return 'categories';
       else if (t === 'person') return 'people';
       else return `${this.type}s`
     },
     model: {
       get() {
+        return this.item;
+      },
+      set(item) {
+        this.$emit('update', {type: this.type, item});
+      }
+      /*get() {
         return this.$store.getters[`transactions/${this.storeItem}`][this.type]
       },
       set(item) {
@@ -74,7 +85,7 @@ export default {
         else if (this.storeItem === 'filters') actionStr = 'updateItemInFilters';
         else alert('Unknown storeItem');
         this.$store.commit(`transactions/${actionStr}`, {type: this.type, item})
-      }
+      }*/
     },
   },
 

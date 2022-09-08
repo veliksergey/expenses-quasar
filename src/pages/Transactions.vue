@@ -138,7 +138,7 @@
     </q-table>
 
     <!-- form dialog -->
-    <q-dialog v-model="formDialog" full-width>
+    <q-dialog v-model="formDialog" persistent full-width>
       <TransactionFormDialog></TransactionFormDialog>
     </q-dialog>
 
