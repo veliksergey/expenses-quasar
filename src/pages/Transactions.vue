@@ -81,6 +81,17 @@
                    @click="editTransaction(props.row)"
             ></q-btn>
 
+            <!-- duplicate/clone -->
+            <q-btn icon="far fa-clone"
+                   color="grey"
+                   dense
+                   round
+                   flat
+                   size="small"
+                   class="q-mr-sm"
+                   @click="cloneTransaction(props.row)"
+                   ></q-btn>
+
           </q-td>
           <q-td
             v-for="col in props.cols"
@@ -250,6 +261,13 @@ export default {
     editTransaction(transaction) {
       this.$store.commit('transactions/setSelectedTransaction', transaction);
       this.$store.commit('transactions/setDialog', true);
+    },
+    cloneTransaction(transaction) {
+      console.log('-- cloneTransaction:');
+      console.log(transaction);
+      const cloned = JSON.parse(JSON.stringify(transaction));
+      delete cloned.id;
+      this.editTransaction(cloned);
     },
     deleteTransaction(transaction) {
       this.$q.dialog({
