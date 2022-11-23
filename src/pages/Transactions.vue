@@ -175,6 +175,7 @@
 import TransactionFormDialog from 'components/transactions/TransactionFormDialog';
 import TransactionFiltersDialog from 'components/transactions/TransactionFiltersDialog';
 import {baseUrl} from 'boot/axios';
+import moment from 'moment';
 
 export default {
   name: 'Transactions',
@@ -263,10 +264,14 @@ export default {
       this.$store.commit('transactions/setDialog', true);
     },
     cloneTransaction(transaction) {
-      console.log('-- cloneTransaction:');
-      console.log(transaction);
       const cloned = JSON.parse(JSON.stringify(transaction));
       delete cloned.id;
+
+      // add 1 month to the date
+      cloned.date = moment(cloned.date, 'YYYY-MM-DD')
+        .add(1, 'months')
+        .format('YYYY-MM-DD')
+
       this.editTransaction(cloned);
     },
     deleteTransaction(transaction) {
