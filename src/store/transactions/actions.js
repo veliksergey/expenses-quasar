@@ -9,7 +9,8 @@ export async function getList (store, {page, rowsPerPage, sortBy, descending, se
   const strFilters = store.state.filters;
   Object.keys(strFilters).forEach(item => {
     if (strFilters[item]) {
-      if (typeof strFilters[item] === 'string') filtersObj[item] = strFilters[item]; // if value in filter is string (date, type, etc)
+      if (typeof strFilters[item] === 'string') filtersObj[item] = strFilters[item]; // if value in filter is string (date, type, etc)\
+      else if (typeof strFilters[item] === 'boolean') filtersObj[item] = strFilters[item] ? 'true' : 'false';
       else if (strFilters[item].id) filtersObj[`${item}Id`] = strFilters[item].id; // if value is an object (account, category, etc) {id: 0, name: ''}
     }
   });

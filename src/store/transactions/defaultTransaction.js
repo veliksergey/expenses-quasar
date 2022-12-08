@@ -30,7 +30,8 @@ const defaultFilters = {
   vendor: null,
   date: '',
   type: '',
-  condition1: 'all',
+  condition1: null,
+  excludeLoans: true,
 }
 
 export {defaultTransaction, defaultFilters}

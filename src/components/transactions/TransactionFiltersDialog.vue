@@ -51,6 +51,12 @@
               ></q-select>
           </div>
 
+          <!-- excludeLoans -->
+          <q-checkbox
+            label="Exclude loans"
+            v-model="excludeLoansModel"
+            ></q-checkbox>
+
 
         </div>
       </q-card-section>
@@ -131,6 +137,10 @@ export default {
     condition1Model: {
       get() {return this.filters.condition1},
       set(value) {this.updateItem({type: 'condition1', item: value})}
+    },
+    excludeLoansModel: {
+      get() {return this.filters.excludeLoans},
+      set(value) {this.updateItem({type: 'excludeLoans', item: value})}
     }
   },
 
