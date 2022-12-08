@@ -10,7 +10,7 @@
     class="q-mb-xl"
   >
     <q-card-section class="bg-primary text-white cursor-pointer" @click="toggleCard(title)">
-      {{capitilize(title)}}
+      {{capitilize(title)}} <strong><i style="color: orange">(may exclude loanPaymentId)</i></strong>
     </q-card-section>
 
     <!-- table section -->
@@ -116,7 +116,7 @@ export default {
   data() {
     return {
       $q: useQuasar(),
-      projectId: 2,
+      projectId: 8, // 7, 8
       groupBy: '',
       totals: {},
       columns: [

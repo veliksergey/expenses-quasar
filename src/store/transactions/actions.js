@@ -108,3 +108,25 @@ export async function deleteTransaction (store, {transaction}) {
     store.dispatch('getList');
   }
 }
+
+export async function setCondition1 (store, {id, condition}) {
+  store.commit('setIsSaving', true);
+
+  try {
+
+    const res = await api.put(`transactions/${id}/condition1`, {condition});
+    const data = res.data;
+
+    if (data.errMsg) {
+      alert(data.errMsg);
+      throw new Error(data.errMsg);
+    }
+
+    store.commit('updateTransactionInList', data);
+    store.commit('setIsSaving', false);
+
+  } catch (err) {
+    console.error(err);
+    store.commit('setIsSaving', false);
+  }
+}

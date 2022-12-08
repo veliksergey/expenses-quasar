@@ -92,6 +92,17 @@
                    @click="cloneTransaction(props.row)"
                    ></q-btn>
 
+            <!-- set/change condition1 -->
+            <q-btn :icon="props.row.condition1 ? 'person' : 'fa fa-handshake'"
+                   color="grey"
+                   dense
+                   round
+                   flat
+                   size="small"
+                   class="q-mr-sm"
+                   @click="setCondition1(props.row)"
+            ></q-btn>
+
           </q-td>
           <q-td
             v-for="col in props.cols"
@@ -273,6 +284,11 @@ export default {
         .format('YYYY-MM-DD')
 
       this.editTransaction(cloned);
+    },
+    setCondition1(transaction) {
+      const id = transaction.id;
+      const condition = !transaction.condition1;
+      this.$store.dispatch('transactions/setCondition1', {id, condition});
     },
     deleteTransaction(transaction) {
       this.$q.dialog({

@@ -36,9 +36,21 @@
           <div class="col-12 col-sm-6 filterCol">
             <q-input
               label="Date"
-              v-model="date"
+              v-model="dateModel"
             ></q-input>
           </div>
+
+          <!-- condition1 -->
+          <div class="col-12 col-sm-6 filterCol">
+            <q-select
+              label="Condition1"
+              v-model="condition1Model"
+              :options="conditions"
+              option-value="id"
+              option-label="name"
+              ></q-select>
+          </div>
+
 
         </div>
       </q-card-section>
@@ -73,6 +85,17 @@ export default {
   name: "TransactionFiltersDialog",
   components: {ItemDropdown},
 
+  data() {
+    return {
+      testModel: null,
+      conditions: [
+        {id: 'all', name: 'All',},
+        {id: 'false', name: 'For Partner',},
+        {id: 'true', name: 'Only Me',},
+      ],
+    }
+  },
+
   computed: {
     filters() {
       return this.$store.getters['transactions/filters'];
@@ -97,14 +120,18 @@ export default {
       get() {return this.filters.vendorId},
       set(value) {this.setParamInFilters('vendorId', value)}
     },
-    date: {
-      get() {return this.filters.date},
-      set(value) {this.setParamInFilters('date', value)}
-    },
     type: {
       get() {return this.filters.type},
       set(value) {this.setParamInFilters('type', value)}
     },*/
+    dateModel: {
+      get() {return this.filters.date},
+      set(value) {this.updateItem({type: 'date', item: value})}
+    },
+    condition1Model: {
+      get() {return this.filters.condition1},
+      set(value) {this.updateItem({type: 'condition1', item: value})}
+    }
   },
 
   methods: {
@@ -114,9 +141,9 @@ export default {
     close() {
       this.$store.commit('transactions/setFiltersDialog', false);
     },
-    setParamInFilters(param, value) {
+    /*setParamInFilters(param, value) {
       this.$store.commit('transactions/setFilters', {[param]: value});
-    },
+    },*/
     updateItem({type, item}) {
       this.$store.commit(`transactions/updateItemInFilters`, {type, item})
     }
