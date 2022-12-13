@@ -20,6 +20,7 @@ const defaultTransaction = {
   vendor: {id: 0, name: '',},
   fileName: '',
   fileInTemp: '',
+  condition1: false,
 }
 
 const defaultFilters = {

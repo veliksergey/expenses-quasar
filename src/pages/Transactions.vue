@@ -101,6 +101,7 @@
                    size="small"
                    class="q-mr-sm"
                    @click="setCondition1(props.row)"
+                   disable
             ></q-btn>
 
           </q-td>

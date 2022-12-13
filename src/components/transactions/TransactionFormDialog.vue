@@ -225,6 +225,18 @@
               ></q-input>
             </div>
 
+            <!-- condition1 -->
+            <div class="col-12 col-sm-6 col-md-4 formCol">
+              <q-checkbox label="Tax Condition"
+                          v-model="condition1"
+                          checked-icon="person"
+                          unchecked-icon="fa fa-handshake"
+                          color="secondary"
+                          keep-color
+                          style="margin-top: 15px"
+              ></q-checkbox>
+            </div>
+
           </template>
 
         </div>
@@ -330,6 +342,10 @@ export default {
     fileInTemp: {
       get() {return this.selected.fileInTemp;},
       set(value) {this.setParamInSelected('fileInTemp', value);}
+    },
+    condition1: {
+      get() {return this.selected.condition1},
+      set(value) {this.setParamInSelected('condition1', value)}
     },
     amountInputClasses() {
       return `text-${this.type === 1 ? 'green' : 'pink'}-9 text-right`;
