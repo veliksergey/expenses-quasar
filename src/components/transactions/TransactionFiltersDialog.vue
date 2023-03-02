@@ -93,7 +93,6 @@ export default {
 
   data() {
     return {
-      testModel: null,
       conditions: [
         {id: 'all', name: 'All',},
         {id: 'false', name: 'For Partner',},

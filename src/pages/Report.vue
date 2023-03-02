@@ -3,6 +3,14 @@
 
 <!--  <ItemDropdown type="project" :required="true" storeItem="selectedTransaction"></ItemDropdown>-->
 
+  <!-- filters -->
+  <q-btn round flat dense icon="filter_alt" @click="filtersDialog = true">
+    <q-badge floating rounded color="secondary" v-if="filtersCount">{{ filtersCount }}</q-badge>
+  </q-btn>
+
+  <!-- refresh btn -->
+  <q-btn round flat dense icon="refresh" @click="getTables({resetFilters: true})"></q-btn>
+
   <q-card
     v-for="title in Object.keys(tables)"
     :id="cardId(title)"
@@ -102,22 +110,27 @@
   </q-table>-->
 
 
+  <!-- filters dialog -->
+  <q-dialog v-model="filtersDialog" @before-hide="onFiltersDialogClose">
+    <ReportFiltersDialog></ReportFiltersDialog>
+  </q-dialog>
+
 </div>
 </template>
 
 <script>
 import {exportFile, useQuasar} from 'quasar';
-// import ItemDropdown from 'components/items/ItemDropdown';
+import ReportFiltersDialog from "components/reports/ReportFiltersDialog.vue";
 
 export default {
   name: "Report",
-  // components: {ItemDropdown},
+  components: {ReportFiltersDialog},
 
   data() {
     return {
       $q: useQuasar(),
-      projectId: 8, // 7, 8
-      groupBy: '',
+      // projectId: 8, // 7 - sml, 8 - cove point 96
+      // groupBy: '',
       totals: {},
       columns: [
         // {name: 'actions', style: 'background-color: orange; width: 10px; padding: 0'},
@@ -141,15 +154,24 @@ export default {
 
   computed: {
     tables() {return this.$store.getters['report/tables']},
+    filtersDialog: {
+      get() {return this.$store.getters['report/filtersDialog']},
+      set(newVal) {this.$store.commit('report/setFiltersDialog', newVal)}
+    },
+    filtersCount() {return this.$store.getters['report/filtersCount']},
   },
 
   methods: {
-    async getTables() {
-      await this.$store.dispatch('report/getTables', {
-        projectId: this.projectId,
-        groupBy: this.groupBy,
-      });
+    async getTables(props) {
+      // reset filters
+      const resetFilters = !!props?.resetFilters;
+      if (resetFilters) this.$store.commit('transactions/setFilters');
+
+      await this.$store.dispatch('report/getTables');
       this.calculateTotals();
+    },
+    onFiltersDialogClose() {
+      this.getTables();
     },
     capitilize(value) {
       return `${value.charAt(0).toUpperCase()}${value.slice(1)}`;
@@ -233,7 +255,8 @@ export default {
   },
 
   mounted() {
-    this.getTables();
+    this.getTables({resetFilters: true});
+    this.$store.dispatch('items/getItems', {forced: true});
   }
 };
 
