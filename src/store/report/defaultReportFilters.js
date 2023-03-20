@@ -1,6 +1,6 @@
 const defaultFilters = {
-  project: null,
-  category: null,
+  project: {id: 0, name: '',},
+  category: {id: 0, name: '',},
   year: null,
   groupBy: null,
   condition1: null,
