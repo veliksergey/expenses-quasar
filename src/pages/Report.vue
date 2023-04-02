@@ -178,10 +178,17 @@ export default {
     },
 
     exportTable (tableTitle) {
-      console.log(`-- ${tableTitle}`, this.tables[tableTitle].length, this.tables[tableTitle]);
+
+      const tableToExport = JSON.parse(JSON.stringify(this.tables[tableTitle]));
+
+      // convert amount to negative if type=1 (income)
+      tableToExport.map(t => {
+        if (t.type === 1) t.amount = -Math.abs(t.amount);
+      });
+
       // naive encoding to csv format
       const content = [this.columns.map(col => wrapCsvValue(col.label))].concat(
-        this.tables[tableTitle].map(row => this.columns.map(col => wrapCsvValue(
+        tableToExport.map(row => this.columns.map(col => wrapCsvValue(
           typeof col.field === 'function'
             ? col.field(row)
             : row[ col.field === void 0 ? col.name : col.field ],
