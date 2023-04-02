@@ -35,8 +35,33 @@
           <!-- date -->
           <div class="col-12 col-sm-6 filterCol">
             <q-input
-              label="Date"
+              label="Exact Date"
               v-model="dateModel"
+            ></q-input>
+          </div>
+
+          <!-- date from -->
+          <div class="col-12 col-sm-6 filterCol">
+            <q-input
+              label="Date From"
+              v-model="dateFromModel"
+            ></q-input>
+          </div>
+
+          <!-- date to -->
+          <div class="col-12 col-sm-6 filterCol">
+            <q-input
+              label="Date To"
+              v-model="dateToModel"
+            ></q-input>
+          </div>
+
+          <!-- year -->
+          <div class="col-12 col-sm-6 filterCol">
+            <q-input
+              type="number"
+              label="Year"
+              v-model="yearModel"
             ></q-input>
           </div>
 
@@ -132,6 +157,18 @@ export default {
     dateModel: {
       get() {return this.filters.date},
       set(value) {this.updateItem({type: 'date', item: value})}
+    },
+    dateFromModel: {
+      get() {return this.filters.dateFrom},
+      set(value) {this.updateItem({type: 'dateFrom', item: value})}
+    },
+    dateToModel: {
+      get() {return this.filters.dateTo},
+      set(value) {this.updateItem({type: 'dateTo', item: value})}
+    },
+    yearModel: {
+      get() {return this.filters.year},
+      set(value) {this.updateItem({type: 'year', item: value})}
     },
     condition1Model: {
       get() {return this.filters.condition1},

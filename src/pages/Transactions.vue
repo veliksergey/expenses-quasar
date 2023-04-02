@@ -13,7 +13,9 @@
       @request="getTransactions"
       binary-state-sort
       table-header-class="bg-primary"
+
     >
+      <!-- :expanded="expendedAllIds" -->
       <!-- :rows-per-page-options="[10,20,50,100, 0]" -->
 
       <!-- top-right slot -->
@@ -231,6 +233,9 @@ export default {
       set(newVal) {this.$store.commit('transactions/setFiltersDialog', newVal)}
     },
     filtersCount() {return this.$store.getters['transactions/filtersCount']},
+    expendedAllIds() {
+      return this.transactions.map(t => t.id);
+    },
   },
 
   watch: {
