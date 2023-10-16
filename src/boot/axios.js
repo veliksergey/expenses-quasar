@@ -1,8 +1,8 @@
 import { boot } from 'quasar/wrappers'
 import axios from 'axios'
 
-export const baseUrl = 'http://localhost:8008';
-// export const baseUrl = 'http://192.168.0.29:8008';
+// export const baseUrl = 'http://localhost:8008';
+export const baseUrl = 'http://192.168.163.130:8008';
 
 // Be careful when using SSR for cross-request state pollution
 // due to creating a Singleton instance here;

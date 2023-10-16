@@ -8,10 +8,11 @@ export async function getTables (store) {
   let qryString = '';
   const strFilters = store.state.filters;
   Object.keys(strFilters).forEach(item => {
-    if (strFilters[item]) {
-      if (typeof strFilters[item] === 'string') qryString += `${item}=${strFilters[item]}&`; // if value in filter is string (date, type, etc)\
-      else if (typeof strFilters[item] === 'boolean') qryString += `${item}=${strFilters[item] ? 'true' : 'false'}&`;
-      else if (strFilters[item].id) qryString += `${item}Id=${strFilters[item].id}&`; // if value is an object (account, category, etc) {id: 0, name: ''}
+    const fItem = strFilters[item];
+    if (fItem) {
+      if (typeof fItem === 'string' || typeof fItem === 'number') qryString += `${item}=${fItem}&`; // if value in filter is string (date, type, etc)\
+      else if (typeof fItem === 'boolean') qryString += `${item}=${fItem ? 'true' : 'false'}&`;
+      else if (fItem.id) qryString += `${item}Id=${fItem.id}&`; // if value is an object (account, category, etc) {id: 0, name: ''}
     }
   });
   // const filters = JSON.stringify(filtersObj);
